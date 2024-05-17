@@ -5,7 +5,6 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import '../common/login_common.dart';
 
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -23,13 +22,20 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    // Wait for 5 seconds, then navigate to LoginScreen
-    Future.delayed(Duration(seconds: 5), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
-    });
+    // If this navigation is intentional for some setup, it should be handled differently
+    // Future.delayed(Duration(seconds: 5), () {
+    //   Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => const LoginScreen()),
+    //   );
+    // });
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   Future<void> _handleGoogleSignIn(BuildContext context) async {

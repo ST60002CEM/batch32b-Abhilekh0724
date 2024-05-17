@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -28,6 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       // Handle registration error here
     }
   }
+
 
   Future<void> _handleFacebookSignUp() async {
     try {
@@ -189,6 +191,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     side: const BorderSide(color: Colors.black),
                   ),
                 ),
+                const SizedBox(height: 10),
+
               ],
             ),
           ),
