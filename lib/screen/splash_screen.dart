@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     _controller.setLooping(true);
 
     // Wait for the video duration (or any specific duration), then navigate to LoginScreen
-    Future.delayed(const Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 4), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
