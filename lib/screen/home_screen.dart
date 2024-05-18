@@ -21,24 +21,34 @@ class _HomeScreenState extends State<HomeScreen> {
           VenueCard(
             imagePath: 'assets/images/AOne.jpg',
             venueName: 'AONE',
-            description: 'This is a description for Venue 1.',
+            description: 'Rustic outdoor wedding venue with ocean view and picnic tables.',
+
+            rating: 4.5,
+            review: 'Great place, had a wonderful time!',
           ),
           SizedBox(height: 16.0),
           VenueCard(
             imagePath: 'assets/images/jeremy.jpg',
-            venueName: 'Venue 2',
-            description: 'This is a description for Venue 2.',
+            venueName: 'Green Side',
+            description: 'Serene outdoor wedding venue by a lake with greenery backdrop',
+            rating: 4.0,
+            review: 'Good ambiance and service.',
           ),
           SizedBox(height: 16.0),
           VenueCard(
             imagePath: 'assets/images/Party.jpg',
-            venueName: 'Venue 3',
-            description: 'This is a description for Venue 3.',
+            venueName: 'VenueVendor',
+            description: 'Outdoor wedding venue with good ambience',
+            rating: 3.5,
+            review: 'Nice place, but could be better.',
           ),
+          SizedBox(height: 16.0),
           VenueCard(
             imagePath: 'assets/images/Dar.jpg',
-            venueName: 'Venue 4',
-            description: 'This is a description for Venue 4.',
+            venueName: 'Classic',
+            description: 'Elegant indoor wedding reception venue with string lights decoration..',
+            rating: 5.0,
+            review: 'Absolutely fantastic!',
           ),
         ],
       ),
@@ -50,12 +60,16 @@ class VenueCard extends StatelessWidget {
   final String imagePath;
   final String venueName;
   final String description;
+  final double rating;
+  final String review;
 
   const VenueCard({
     super.key,
     required this.imagePath,
     required this.venueName,
     required this.description,
+    required this.rating,
+    required this.review,
   });
 
   @override
@@ -90,9 +104,47 @@ class VenueCard extends StatelessWidget {
               description,
               style: const TextStyle(fontSize: 16.0),
             ),
+            const SizedBox(height: 8.0),
+            Row(
+              children: [
+                StarRating(rating: rating),
+                const SizedBox(width: 8.0),
+                Text(
+                  rating.toString(),
+                  style: const TextStyle(fontSize: 16.0),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              review,
+              style: const TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic),
+            ),
           ],
         ),
       ),
     );
+  }
+}
+
+class StarRating extends StatelessWidget {
+  final double rating;
+  const StarRating({super.key, required this.rating});
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> stars = [];
+    for (int i = 1; i <= 5; i++) {
+      Icon starIcon;
+      if (i <= rating) {
+        starIcon = const Icon(Icons.star, color: Colors.amber);
+      } else if (i - rating < 1) {
+        starIcon = const Icon(Icons.star_half, color: Colors.amber);
+      } else {
+        starIcon = const Icon(Icons.star_border, color: Colors.amber);
+      }
+      stars.add(starIcon);
+    }
+    return Row(children: stars);
   }
 }
