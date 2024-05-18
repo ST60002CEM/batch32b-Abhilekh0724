@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+
 
 import '../common/login_common.dart';
 
@@ -49,22 +49,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _handleAppleSignIn(BuildContext context) async {
-    try {
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-      // Handle successful login here
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Apple sign-in failed: $error')),
-      );
-    }
-  }
-
   Future<void> _handleFacebookSignIn(BuildContext context) async {
     try {
       final result = await FacebookAuth.instance.login();
@@ -97,7 +81,6 @@ class _LoginScreenState extends State<LoginScreen> {
             emailController: _emailController,
             passwordController: _passwordController,
             handleGoogleSignIn: _handleGoogleSignIn,
-            handleAppleSignIn: _handleAppleSignIn,
             handleFacebookSignIn: _handleFacebookSignIn,
           ),
         ),

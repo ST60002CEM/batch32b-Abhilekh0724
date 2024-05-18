@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import '../screen/register_screen.dart';
-
+import '../screen/dashboard_screen.dart'; // Import the DashboardScreen
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,36 +37,21 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _handleAppleSignIn(BuildContext context) async {
-    try {
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-      // Handle successful login here
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Apple sign-in failed: $error')),
-      );
-    }
-  }
 
   Future<void> _handleFacebookSignIn(BuildContext context) async {
     try {
-    final result = await FacebookAuth.instance.login();
-    if (result.status == LoginStatus.success) {
-    // Handle successful login here
-    } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('Facebook sign-in failed: ${result.status}')),
-    );
-    }
+      final result = await FacebookAuth.instance.login();
+      if (result.status == LoginStatus.success) {
+        // Handle successful login here
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Facebook sign-in failed: ${result.status}')),
+        );
+      }
     } catch (error) {
-    ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('Facebook sign-in failed: $error')),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Facebook sign-in failed: $error')),
+      );
     }
   }
 
@@ -86,7 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
             emailController: _emailController,
             passwordController: _passwordController,
             handleGoogleSignIn: _handleGoogleSignIn,
-            handleAppleSignIn: _handleAppleSignIn,
             handleFacebookSignIn: _handleFacebookSignIn,
           ),
         ),
@@ -100,7 +83,6 @@ class LoginContainer extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final Future<void> Function(BuildContext context) handleGoogleSignIn;
-  final Future<void> Function(BuildContext context) handleAppleSignIn;
   final Future<void> Function(BuildContext context) handleFacebookSignIn;
 
   const LoginContainer({
@@ -109,7 +91,6 @@ class LoginContainer extends StatelessWidget {
     required this.emailController,
     required this.passwordController,
     required this.handleGoogleSignIn,
-    required this.handleAppleSignIn,
     required this.handleFacebookSignIn,
   });
 
@@ -189,6 +170,12 @@ class LoginContainer extends StatelessWidget {
                   const SnackBar(content: Text('Logging in')),
                 );
                 // Add your login logic here
+
+                // Navigate to DashboardScreen
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const DashboardScreen()),
+                );
               }
             },
             child: const Text('Login'),
@@ -218,11 +205,6 @@ class LoginContainer extends StatelessWidget {
                 minimumSize: const Size(double.infinity, 50),
                 side: const BorderSide(color: Colors.black)
             ),
-          ),
-          const SizedBox(height: 10),
-          SignInWithAppleButton(
-            onPressed: () => handleAppleSignIn(context),
-            style: SignInWithAppleButtonStyle.black,
           ),
           const SizedBox(height: 20),
           Row(
@@ -309,6 +291,12 @@ class LoginContainer extends StatelessWidget {
                       const SnackBar(content: Text('Logging in')),
                     );
                     // Add your login logic here
+
+                    // Navigate to DashboardScreen
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const DashboardScreen()),
+                    );
                   }
                 },
                 child: const Text('Login'),
@@ -339,11 +327,6 @@ class LoginContainer extends StatelessWidget {
                     side: const BorderSide(color: Colors.black)
                 ),
               ),
-              const SizedBox(height: 10),
-              SignInWithAppleButton(
-                onPressed: () => handleAppleSignIn(context),
-                style: SignInWithAppleButtonStyle.black,
-              ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -367,4 +350,3 @@ class LoginContainer extends StatelessWidget {
     );
   }
 }
-
