@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:venuevendor/features/auth/presentation/view/login_view.dart';
 import 'package:video_player/video_player.dart';
 
-import 'login_screen.dart'; // Replace with your actual login screen import
+import '../viewmodel/splash_view_model.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({Key? key}) : super(key: key);
@@ -29,7 +30,7 @@ class _SplashViewState extends State<SplashView> {
     Future.delayed(const Duration(seconds: 4), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        MaterialPageRoute(builder: (context) => const LoginView()),
       );
     });
   }

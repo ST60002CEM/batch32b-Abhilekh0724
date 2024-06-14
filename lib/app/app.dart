@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:venuevendor/screen/dashboard_screen.dart';
-import 'package:venuevendor/screen/home_screen.dart';
-import 'package:venuevendor/screen/splash_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class App extends StatelessWidget {
+import 'package:venuevendor/app/themes/app_theme.dart';
+import 'package:venuevendor/features/home/presentation/view/bottom_view/dashboard_view.dart';
+import 'package:venuevendor/features/home/presentation/view/home_view.dart';
+
+import '../features/splash/presentation/view/splash_view.dart';
+import 'navigator_key/navigator_key.dart';
+
+class App extends ConsumerWidget {
   const App({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp(
+      navigatorKey: AppNavigator.navigatorKey,
       debugShowCheckedModeBanner: false,
-      home:SplashScreen (),
+      title: 'Student Management',
+      theme: AppTheme.getApplicationTheme(false),
+      home: const SplashView(),
     );
   }
 }
