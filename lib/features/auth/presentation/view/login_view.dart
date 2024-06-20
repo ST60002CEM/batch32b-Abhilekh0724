@@ -1,11 +1,11 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:venuevendor/features/auth/presentation/view/register_view.dart';
 
 import '../../../../core/common/my_snackbar.dart';
+import '../../../home/presentation/view/home_view.dart';
 import '../viewmodel/auth_view_model.dart';
+
 class LoginView extends ConsumerWidget {
   const LoginView({Key? key}) : super(key: key);
 
@@ -39,6 +39,11 @@ class LoginView extends ConsumerWidget {
                   handleGoogleSignIn: () async {
                     try {
                       await authViewModel.handleGoogleSignIn(context);
+                      // Navigate to HomeView after successful login
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const HomeView()),
+                      );
                     } catch (error) {
                       showMySnackBar(message: 'Google sign-in failed: $error');
                     }
@@ -46,6 +51,11 @@ class LoginView extends ConsumerWidget {
                   handleFacebookSignIn: () async {
                     try {
                       await authViewModel.handleFacebookSignIn(context);
+                      // Navigate to HomeView after successful login
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const HomeView()),
+                      );
                     } catch (error) {
                       showMySnackBar(message: 'Facebook sign-in failed: $error');
                     }
@@ -115,6 +125,11 @@ class __LoginFormState extends State<_LoginForm> {
                 widget.authViewModel.loginStudent(
                   _usernameController.text,
                   _passwordController.text,
+                );
+                // Navigate to HomeView after successful login
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeView()),
                 );
               }
             },

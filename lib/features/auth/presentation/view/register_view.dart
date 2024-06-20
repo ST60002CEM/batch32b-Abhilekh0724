@@ -1,13 +1,12 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../../../../core/common/my_snackbar.dart';
 import '../../domain/entity/auth_entity.dart';
 import '../viewmodel/auth_view_model.dart';
+import 'login_view.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class RegisterView extends ConsumerStatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -17,41 +16,42 @@ class RegisterView extends ConsumerStatefulWidget {
 }
 
 class _RegisterViewState extends ConsumerState<RegisterView> {
-  // Check for camera permission
-  checkCameraPermission() async {
-    if (await Permission.camera.request().isRestricted ||
-        await Permission.camera.request().isDenied) {
-      await Permission.camera.request();
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+  TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  bool isObscure = true;
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  Future<void> _handleGoogleSignUp() async {
+    try {
+      await _googleSignIn.signIn();
+      // Handle successful registration here
+    } catch (error) {
+      // Handle registration error here
     }
   }
 
-  File? _img;
-  Future _browseImage(WidgetRef ref, ImageSource imageSource) async {
+  Future<void> _handleFacebookSignUp() async {
     try {
-      final image = await ImagePicker().pickImage(source: imageSource);
-      if (image != null) {
-        setState(() {
-          _img = File(image.path);
-        });
+      final result = await FacebookAuth.instance.login();
+      if (result.status == LoginStatus.success) {
+        // Handle successful registration here
       } else {
-        return;
+        // Handle registration error here
       }
-    } catch (e) {
-      debugPrint(e.toString());
+    } catch (error) {
+      // Handle registration error here
     }
   }
 
   final _gap = const SizedBox(height: 8);
-
-  final _key = GlobalKey<FormState>();
-
-  final _fnameController = TextEditingController(text: 'Abhilekh');
-  final _lnameController = TextEditingController(text: 'Yonjan');
-  final _phoneController = TextEditingController(text: '9840031574');
-  final _usernameController = TextEditingController(text: 'Abhilekh');
-  final _passwordController = TextEditingController(text: 'abhi111');
-
-  bool isObscure = true;
 
   @override
   Widget build(BuildContext context) {
@@ -59,90 +59,49 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
       appBar: AppBar(
         title: const Text('Register'),
         centerTitle: true,
+        backgroundColor: Colors.red[50],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(16),
             child: Form(
-              key: _key,
+              key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  InkWell(
-                    onTap: () {
-                      showModalBottomSheet(
-                        backgroundColor: Colors.grey[300],
-                        context: context,
-                        isScrollControlled: true,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _firstNameController,
+                          decoration: const InputDecoration(
+                            labelText: 'First Name',
                           ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter first name';
+                            }
+                            return null;
+                          },
                         ),
-                        builder: (context) => Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  checkCameraPermission();
-                                  _browseImage(ref, ImageSource.camera);
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(Icons.camera),
-                                label: const Text('Camera'),
-                              ),
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  _browseImage(ref, ImageSource.gallery);
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(Icons.image),
-                                label: const Text('Gallery'),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                    child: SizedBox(
-                      height: 200,
-                      width: 200,
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundImage: _img != null
-                            ? FileImage(_img!)
-                            : const AssetImage('assets/images/profile.png')
-                        as ImageProvider,
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  TextFormField(
-                    controller: _fnameController,
-                    decoration: const InputDecoration(
-                      labelText: 'First Name',
-                    ),
-                    validator: ((value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter first name';
-                      }
-                      return null;
-                    }),
-                  ),
-                  _gap,
-                  TextFormField(
-                    controller: _lnameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Last Name',
-                    ),
-                    validator: ((value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter last name';
-                      }
-                      return null;
-                    }),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _lastNameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Last Name',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter last name';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                   _gap,
                   TextFormField(
@@ -172,6 +131,22 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                   ),
                   _gap,
                   TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                        return 'Please enter a valid email address';
+                      }
+                      return null;
+                    },
+                  ),
+                  _gap,
+                  TextFormField(
                     controller: _passwordController,
                     obscureText: isObscure,
                     decoration: InputDecoration(
@@ -195,30 +170,79 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                     }),
                   ),
                   _gap,
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_key.currentState!.validate()) {
-                          var student = AuthEntity(
-                            fname: _fnameController.text,
-                            lname: _lnameController.text,
-                            // No reference to imageName here
-                            phone: _phoneController.text,
-                            username: _usernameController.text,
-                            password: _passwordController.text,
-                          );
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Confirm Password',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please confirm your password';
+                      }
+                      if (value != _passwordController.text) {
+                        return 'Passwords do not match';
+                      }
+                      return null;
+                    },
+                  ),
+                  _gap,
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        var student = AuthEntity(
+                          fname: _firstNameController.text,
+                          lname: _lastNameController.text,
+                          phone: _phoneController.text,
+                          username: _usernameController.text,
+                          password: _passwordController.text,
+                        );
 
-                          // Example usage of showMySnackBar
-                          showMySnackBar(
-                            message: 'Registration successful!',
-                            color: Colors.green,
-                          );
-                        }
-                      },
-                      child: const Text('Register'),
+                        // Perform registration logic here
+                        // For demonstration, we navigate back to LoginView after registration
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginView()),
+                        );
+
+                        // Example usage of showMySnackBar
+                        showMySnackBar(
+                          message: 'Registration successful!',
+                          color: Colors.black,
+                        );
+                      }
+                    },
+                    child: const Text('Register'),
+                  ),
+                  const SizedBox(height: 40),
+                  ElevatedButton.icon(
+                    onPressed: _handleGoogleSignUp,
+                    icon: Image.asset(
+                      'assets/icons/google.png',
+                      // Ensure you have a Google logo asset
+                      height: 24.0,
+                      width: 24.0,
+                    ),
+                    label: const Text('Register with Google'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.black,
+                      backgroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 50),
+                      side: const BorderSide(color: Colors.black),
                     ),
                   ),
+                  const SizedBox(height: 10),
+                  ElevatedButton.icon(
+                    onPressed: _handleFacebookSignUp,
+                    icon: const Icon(Icons.facebook, color: Colors.blue),
+                    label: const Text('Register with Facebook'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 50),
+                      side: const BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),

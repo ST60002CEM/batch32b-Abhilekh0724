@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'bottom_view/dashboard_view.dart';
 import 'bottom_view/profile_view.dart';
 
 class HomeView extends ConsumerStatefulWidget {
-  const HomeView({super.key});
+  const HomeView({Key? key}) : super(key: key);
 
   @override
   ConsumerState<HomeView> createState() => _HomeViewState();
@@ -57,6 +56,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[50],
+        title: const Text('Venue Vendor'),
       ),
       backgroundColor: Colors.red[50],
       body: selectedIndex == 0
@@ -70,14 +70,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
             label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Course',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.batch_prediction),
-            label: 'Batch',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -103,13 +95,13 @@ class VenueCard extends StatelessWidget {
   final String review;
 
   const VenueCard({
-    super.key,
+    Key? key,
     required this.imagePath,
     required this.venueName,
     required this.description,
     required this.rating,
     required this.review,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -146,10 +138,10 @@ class VenueCard extends StatelessWidget {
             const SizedBox(height: 8.0),
             Row(
               children: [
-                StarRating(rating: rating),
+                const StarRating(rating: 4.5),
                 const SizedBox(width: 8.0),
                 Text(
-                  rating.toString(),
+                  '$rating',
                   style: const TextStyle(fontSize: 16.0),
                 ),
               ],
@@ -168,7 +160,8 @@ class VenueCard extends StatelessWidget {
 
 class StarRating extends StatelessWidget {
   final double rating;
-  const StarRating({super.key, required this.rating});
+
+  const StarRating({Key? key, required this.rating}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
