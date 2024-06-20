@@ -1,58 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_management_starter/features/splash/presentation/viewmodel/splash_view_model.dart';
+import 'package:venuevendor/features/auth/presentation/view/login_view.dart';
+import 'package:video_player/video_player.dart';
 
-class SplashView extends ConsumerStatefulWidget {
-  const SplashView({super.key});
+import '../viewmodel/splash_view_model.dart';
+
+class SplashView extends StatefulWidget {
+  const SplashView({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<SplashView> createState() => _SplashViewState();
+  _SplashViewState createState() => _SplashViewState();
 }
 
-class _SplashViewState extends ConsumerState<SplashView> {
+class _SplashViewState extends State<SplashView> {
+  late VideoPlayerController _controller;
+
   @override
   void initState() {
-    ref.read(splashViewModelProvider.notifier).openLoginView();
     super.initState();
+    _controller = VideoPlayerController.asset('assets/videos/VenueVendor.mp4')
+      ..initialize().then((_) {
+        setState(() {
+          _controller.play();
+        });
+      });
+    _controller.setLooping(true);
+
+    // Wait for the video duration (or any specific duration), then navigate to LoginScreen
+    Future.delayed(const Duration(seconds: 4), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginView()),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green[50],
-      body: Stack(
-        children: [
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 200,
-                  width: 200,
-                  child: Image.asset('assets/images/splash.png'),
-                ),
-                const Text(
-                  'Student Course Management',
-                  style: TextStyle(
-                    fontSize: 25,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const CircularProgressIndicator(),
-                const SizedBox(height: 10),
-                const Text('version : 1.0.0')
-              ],
+      body: Center(
+        child: _controller.value.isInitialized
+            ? SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: _controller.value.size.width,
+              height: _controller.value.size.height,
+              child: VideoPlayer(_controller),
             ),
           ),
-          Positioned(
-            bottom: 10,
-            left: MediaQuery.of(context).size.width / 4,
-            child: const Text(
-              'Developed by: Khatra Sir le',
-              style: TextStyle(fontSize: 15),
-            ),
-          ),
-        ],
+        )
+            : const CircularProgressIndicator(),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:student_management_starter/app/constants/theme_constant.dart';
+
+import '../constants/theme_constant.dart';
 
 class AppTheme {
   AppTheme._();

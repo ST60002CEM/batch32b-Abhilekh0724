@@ -1,12 +1,15 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_management_starter/core/failure/failure.dart';
-import 'package:student_management_starter/core/networking/local/hive_service.dart';
-import 'package:student_management_starter/features/auth/data/model/auth_hive_model.dart';
-import 'package:student_management_starter/features/auth/domain/entity/auth_entity.dart';
+
+import '../../../../../core/failure/failure.dart';
+import '../../../../../core/networking/local/hive_service.dart';
+import '../../../domain/entity/auth_entity.dart';
+import '../../model/auth_hive_model.dart';
 
 final authLocalDataSourceProvider = Provider(
-  (ref) => AuthLocalDataSource(
+      (ref) => AuthLocalDataSource(
     ref.read(hiveServiceProvider),
     ref.read(authHiveModelProvider),
   ),
@@ -18,22 +21,23 @@ class AuthLocalDataSource {
 
   AuthLocalDataSource(this._hiveService, this._authHiveModel);
 
-  Future<Either<Failure, bool>> registerStudent(AuthEntity student) async {
+  Future<Either<Failure, bool>> registerUser(AuthEntity user) async {
     try {
-      await _hiveService.addStudent(_authHiveModel.toHiveModel(student));
+      await _hiveService.addUser(_authHiveModel.toHiveModel(user));
       return const Right(true);
     } catch (e) {
       return Left(Failure(error: e.toString()));
     }
   }
 
-  Future<Either<Failure, bool>> loginStudent(
-    String username,
-    String password,
-  ) async {
+  Future<Either<Failure, bool>> loginUser(String username, String password) async {
     try {
-      AuthHiveModel? students = await _hiveService.login(username, password);
-      return const Right(true);
+      AuthHiveModel? user = await _hiveService.login(username, password);
+      if (user != null) {
+        return const Right(true);
+      } else {
+        return Left(Failure(error: 'Login failed'));
+      }
     } catch (e) {
       return Left(Failure(error: e.toString()));
     }

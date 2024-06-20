@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:student_management_starter/app/constants/api_endpoint.dart';
 
+import '../../../app/constants/api_endpoint.dart';
 import 'dio_error_interceptor.dart';
 
 final httpServiceProvider = Provider<Dio>(

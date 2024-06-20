@@ -2,10 +2,11 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_management_starter/core/failure/failure.dart';
-import 'package:student_management_starter/features/auth/data/data_source/remote/auth_remote_data_source.dart';
-import 'package:student_management_starter/features/auth/domain/entity/auth_entity.dart';
-import 'package:student_management_starter/features/auth/domain/repository/auth_repository.dart';
+
+import '../../../../core/failure/failure.dart';
+import '../../domain/entity/auth_entity.dart';
+import '../../domain/repository/auth_repository.dart';
+import '../data_source/remote/auth_remote_data_source.dart';
 
 final authRemoteRepositoryProvider = Provider<IAuthRepository>((ref) {
   return AuthRemoteRepository(
@@ -23,17 +24,17 @@ class AuthRemoteRepository implements IAuthRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> loginStudent(String username, String password) {
-    return _authRemoteDataSource.loginStudent(username, password);
+  Future<Either<Failure, bool>> loginUser(String username, String password) {
+    return _authRemoteDataSource.loginUser(username, password);
   }
 
   @override
-  Future<Either<Failure, bool>> registerStudent(AuthEntity student) {
-    return _authRemoteDataSource.registerStudent(student);
+  Future<Either<Failure, bool>> registerUser(AuthEntity user) {
+    return _authRemoteDataSource.registerUser(user);
   }
 
   @override
   Future<Either<Failure, AuthEntity>> getCurrentUser() {
-   return _authRemoteDataSource.getCurrentUser();
+    return _authRemoteDataSource.getCurrentUser();
   }
 }

@@ -1,4 +1,6 @@
-import 'package:student_management_starter/features/auth/domain/entity/auth_entity.dart';
+
+
+import '../../../auth/domain/entity/auth_entity.dart';
 
 class CurrentUserState {
   final bool isLoading;

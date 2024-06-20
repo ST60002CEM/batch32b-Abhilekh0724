@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_management_starter/app/constants/api_endpoint.dart';
-import 'package:student_management_starter/features/auth/presentation/viewmodel/auth_view_model.dart';
-import 'package:student_management_starter/features/home/presentation/viewmodel/profile_viewmodel.dart';
+
+import '../../../../../app/constants/api_endpoint.dart';
+import '../../viewmodel/profile_viewmodel.dart';
+
 
 class ProfileView extends ConsumerStatefulWidget {
   const ProfileView({super.key});
