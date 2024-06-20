@@ -1,13 +1,7 @@
+import 'package:student_management_starter/app/navigator/navigator.dart';
+import 'package:student_management_starter/features/auth/presentation/view/register_view.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:venuevendor/features/auth/presentation/view/login_view.dart';
-
-import '../../../../app/navigator/navigator.dart';
-import '../view/register_view.dart';
-import 'login_navigator.dart';
-final registerViewNavigatorProvider = Provider((ref) => RegisterViewNavigator());
-
-class RegisterViewNavigator with LoginViewRoute {}
+class RegisterViewNavigator {}
 
 mixin RegisterViewRoute {
   openRegisterView() {

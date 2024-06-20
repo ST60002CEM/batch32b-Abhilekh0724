@@ -1,95 +1,98 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:venuevendor/screen/checkout_screen.dart';
-import 'package:venuevendor/screen/home_screen.dart';
-import 'package:venuevendor/screen/map_screen.dart';
-import 'package:venuevendor/screen/profile_screen.dart';
+import 'package:student_management_starter/core/common/my_snackbar.dart';
+import 'package:student_management_starter/features/batch/presentation/viewmodel/batch_viewmodel.dart';
+import 'package:student_management_starter/features/course/presentation/viewmodel/course_viewmodel.dart';
+import 'package:student_management_starter/features/home/presentation/viewmodel/home_viewmodel.dart';
+import 'package:student_management_starter/features/home/presentation/widget/batch_widget.dart';
+import 'package:student_management_starter/features/home/presentation/widget/course_widget.dart';
 
-final selectedIndexProvider = StateProvider<int>((ref) => 0);
-
-class DashboardView extends ConsumerWidget {
-  const DashboardView({Key? key}) : super(key: key);
+class DashboardView extends ConsumerStatefulWidget {
+  const DashboardView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selectedIndex = ref.watch(selectedIndexProvider);
+  ConsumerState<DashboardView> createState() => _DashboardViewState();
+}
 
-    List<Widget> lstBottomScreen = [
-      const HomeScreen(),
-      const CheckoutScreen(),
-      const ProfileScreen(),
-      const MapScreen(),
-    ];
+class _DashboardViewState extends ConsumerState<DashboardView> {
+  late bool isDark;
+  @override
+  void initState() {
+    // isDark = ref.read(isDarkThemeProvider);
+    isDark = false;
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    var batchState = ref.watch(batchViewmodelProvider);
+    var courseState = ref.watch(courseViewModelProvider);
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70.0), // Height of the AppBar
-        child: Container(
-          padding: const EdgeInsets.only(top: 20.0), // Padding to bring the AppBar down
-          child: AppBar(
-            backgroundColor: Colors.red[50],
-            leading: IconButton(
-              icon: const Icon(
-                Icons.search,
-                size: 30.0, // Adjust the size as needed
-              ),
-              onPressed: () {
-                // Handle search action
-              },
+      appBar: AppBar(
+        title: const Text('Dashboard View'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              // ref.read(batchViewModelProvider.notifier).getBatches();
+              // ref.read(courseViewModelProvider.notifier).getCourses();
+              showMySnackBar(message: 'Refressing...');
+            },
+            icon: const Icon(
+              Icons.refresh,
+              color: Colors.white,
             ),
-            title: const Center(
-              child: Image(
-                image: AssetImage(
-                  'assets/icons/Venue.png', // Path to the logo image
-                ),
-                height: 70,
-                width: 70, // Adjust the height as needed
-              ),
+          ),
+          IconButton(
+            onPressed: () {
+              ref.read(homeViewModelProvider.notifier).logout();
+            },
+            icon: const Icon(
+              Icons.logout,
+              color: Colors.white,
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(
-                  Icons.person,
-                  size: 30.0, // Adjust the size as needed
-                ),
-                onPressed: () {
-                  ref.read(selectedIndexProvider.notifier).state = 2; // Navigate to the Profile screen
-                },
-              ),
-            ],
           ),
-        ),
-      ),
-      backgroundColor: Colors.red[50],
-      body: lstBottomScreen[selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.grey[600],
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.black,
-        currentIndex: selectedIndex,
-        onTap: (index) {
-          ref.read(selectedIndexProvider.notifier).state = index;
-        },
-        type: BottomNavigationBarType.fixed,
-        iconSize: 40.0, // Adjust the size as needed
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book_online),
-            label: 'Book',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorite',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Location',
-          ),
+          Switch(
+              value: isDark,
+              onChanged: (value) {
+                setState(() {
+                  isDark = value;
+                  // ref.read(isDarkThemeProvider.notifier).updateTheme(value);
+                });
+              }),
         ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Batches',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Flexible(
+              child: BatchWidget(ref: ref, batchList: batchState.lstBatches),
+            ),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Courses',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Flexible(
+              child: CourseWidget(courseList: courseState.lstCourses),
+            ),
+          ],
+        ),
       ),
     );
   }

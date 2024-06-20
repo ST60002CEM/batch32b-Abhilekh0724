@@ -1,107 +1,162 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../../../../core/common/my_snackbar.dart';
-import '../../domain/entity/auth_entity.dart';
-import '../viewmodel/auth_view_model.dart';
-import 'login_view.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:student_management_starter/features/auth/domain/entity/auth_entity.dart';
+import 'package:student_management_starter/features/auth/presentation/viewmodel/auth_view_model.dart';
+import 'package:student_management_starter/features/batch/domain/entity/batch_entity.dart';
+import 'package:student_management_starter/features/batch/presentation/viewmodel/batch_viewmodel.dart';
+import 'package:student_management_starter/features/course/domain/entity/course_entity.dart';
+import 'package:student_management_starter/features/course/presentation/viewmodel/course_viewmodel.dart';
 
 class RegisterView extends ConsumerStatefulWidget {
-  const RegisterView({Key? key}) : super(key: key);
+  const RegisterView({super.key});
 
   @override
   ConsumerState<RegisterView> createState() => _RegisterViewState();
 }
 
 class _RegisterViewState extends ConsumerState<RegisterView> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-  TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
-  bool isObscure = true;
-
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  Future<void> _handleGoogleSignUp() async {
-    try {
-      await _googleSignIn.signIn();
-      // Handle successful registration here
-    } catch (error) {
-      // Handle registration error here
+  // Check for camera permission
+  checkCameraPermission() async {
+    if (await Permission.camera.request().isRestricted ||
+        await Permission.camera.request().isDenied) {
+      await Permission.camera.request();
     }
   }
 
-  Future<void> _handleFacebookSignUp() async {
+  File? _img;
+  Future _browseImage(WidgetRef ref, ImageSource imageSource) async {
     try {
-      final result = await FacebookAuth.instance.login();
-      if (result.status == LoginStatus.success) {
-        // Handle successful registration here
+      final image = await ImagePicker().pickImage(source: imageSource);
+      if (image != null) {
+        setState(() {
+          _img = File(image.path);
+          // Send image to server
+          ref.read(authViewModelProvider.notifier).uploadImage(
+                _img!,
+              );
+        });
       } else {
-        // Handle registration error here
+        return;
       }
-    } catch (error) {
-      // Handle registration error here
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 
   final _gap = const SizedBox(height: 8);
 
+  final _key = GlobalKey<FormState>();
+
+  final _fnameController = TextEditingController(text: 'kiran');
+  final _lnameController = TextEditingController(text: 'kiran123');
+  final _phoneController = TextEditingController(text: '989898989898');
+  final _usernameController = TextEditingController(text: 'kiran');
+  final _passwordController = TextEditingController(text: 'kiran123');
+
+  bool isObscure = true;
+
+  BatchEntity? _dropDownValue;
+  final List<CourseEntity> _lstCourseSelected = [];
+
   @override
   Widget build(BuildContext context) {
+    var batchState = ref.watch(batchViewmodelProvider);
+    var courseState = ref.watch(courseViewModelProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Register'),
         centerTitle: true,
-        backgroundColor: Colors.red[50],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(8),
             child: Form(
-              key: _formKey,
+              key: _key,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _firstNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'First Name',
+                  InkWell(
+                    onTap: () {
+                      showModalBottomSheet(
+                        backgroundColor: Colors.grey[300],
+                        context: context,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter first name';
-                            }
-                            return null;
-                          },
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _lastNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Last Name',
+                        builder: (context) => Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  checkCameraPermission();
+                                  _browseImage(ref, ImageSource.camera);
+                                  Navigator.pop(context);
+                                  // Upload image it is not null
+                                },
+                                icon: const Icon(Icons.camera),
+                                label: const Text('Camera'),
+                              ),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  _browseImage(ref, ImageSource.gallery);
+                                  Navigator.pop(context);
+                                },
+                                icon: const Icon(Icons.image),
+                                label: const Text('Gallery'),
+                              ),
+                            ],
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter last name';
-                            }
-                            return null;
-                          },
                         ),
+                      );
+                    },
+                    child: SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: _img != null
+                            ? FileImage(_img!)
+                            : const AssetImage('assets/images/profile.png')
+                                as ImageProvider,
                       ),
-                    ],
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+                  TextFormField(
+                    controller: _fnameController,
+                    decoration: const InputDecoration(
+                      labelText: 'First Name',
+                    ),
+                    validator: ((value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter first name';
+                      }
+                      return null;
+                    }),
+                  ),
+                  _gap,
+                  TextFormField(
+                    controller: _lnameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Last Name',
+                    ),
+                    validator: ((value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter last name';
+                      }
+                      return null;
+                    }),
                   ),
                   _gap,
                   TextFormField(
@@ -111,11 +166,87 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                     ),
                     validator: ((value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter phone number';
+                        return 'Please enter phoneNo';
                       }
                       return null;
                     }),
                   ),
+                  _gap,
+                  if (batchState.isLoading) ...{
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  } else if (batchState.error != null) ...{
+                    Center(
+                      child: Text(batchState.error!),
+                    )
+                  } else ...{
+                    DropdownButtonFormField<BatchEntity>(
+                      items: batchState.lstBatches
+                          .map((e) => DropdownMenuItem<BatchEntity>(
+                                value: e,
+                                child: Text(e.batchName),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        _dropDownValue = value;
+                      },
+                      value: _dropDownValue,
+                      decoration: const InputDecoration(
+                        labelText: 'Select Batch',
+                      ),
+                      validator: ((value) {
+                        if (value == null) {
+                          return 'Please select batch';
+                        }
+                        return null;
+                      }),
+                    ),
+                  },
+                  _gap,
+                  if (courseState.isLoading) ...{
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  } else if (courseState.error != null) ...{
+                    Center(
+                      child: Text(courseState.error!),
+                    )
+                  } else ...{
+                    MultiSelectDialogField(
+                      title: const Text('Select course'),
+                      items: courseState.lstCourses
+                          .map(
+                            (course) => MultiSelectItem(
+                              course,
+                              course.courseName,
+                            ),
+                          )
+                          .toList(),
+                      listType: MultiSelectListType.CHIP,
+                      buttonText: const Text(
+                        'Select course',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      buttonIcon: const Icon(Icons.search),
+                      onConfirm: (values) {
+                        _lstCourseSelected.clear();
+                        _lstCourseSelected.addAll(values);
+                      },
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.black87,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      validator: ((value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select courses';
+                        }
+                        return null;
+                      }),
+                    ),
+                  },
                   _gap,
                   TextFormField(
                     controller: _usernameController,
@@ -128,22 +259,6 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                       }
                       return null;
                     }),
-                  ),
-                  _gap,
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                        return 'Please enter a valid email address';
-                      }
-                      return null;
-                    },
                   ),
                   _gap,
                   TextFormField(
@@ -170,79 +285,32 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                     }),
                   ),
                   _gap,
-                  TextFormField(
-                    controller: _confirmPasswordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Confirm Password',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please confirm your password';
-                      }
-                      if (value != _passwordController.text) {
-                        return 'Passwords do not match';
-                      }
-                      return null;
-                    },
-                  ),
-                  _gap,
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        var student = AuthEntity(
-                          fname: _firstNameController.text,
-                          lname: _lastNameController.text,
-                          phone: _phoneController.text,
-                          username: _usernameController.text,
-                          password: _passwordController.text,
-                        );
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_key.currentState!.validate()) {
+                          var student = AuthEntity(
+                            fname: _fnameController.text,
+                            lname: _lnameController.text,
+                            // Read the image from state
+                            image:
+                                ref.read(authViewModelProvider).imageName ?? '',
+                            phone: _phoneController.text,
+                            username: _usernameController.text,
+                            password: _passwordController.text,
+                            batch: _dropDownValue!,
+                            courses: _lstCourseSelected,
+                          );
 
-                        // Perform registration logic here
-                        // For demonstration, we navigate back to LoginView after registration
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const LoginView()),
-                        );
-
-                        // Example usage of showMySnackBar
-                        showMySnackBar(
-                          message: 'Registration successful!',
-                          color: Colors.black,
-                        );
-                      }
-                    },
-                    child: const Text('Register'),
-                  ),
-                  const SizedBox(height: 40),
-                  ElevatedButton.icon(
-                    onPressed: _handleGoogleSignUp,
-                    icon: Image.asset(
-                      'assets/icons/google.png',
-                      // Ensure you have a Google logo asset
-                      height: 24.0,
-                      width: 24.0,
-                    ),
-                    label: const Text('Register with Google'),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.black,
-                      backgroundColor: Colors.white,
-                      minimumSize: const Size(double.infinity, 50),
-                      side: const BorderSide(color: Colors.black),
+                          ref
+                              .read(authViewModelProvider.notifier)
+                              .registerStudent(student);
+                        }
+                      },
+                      child: const Text('Register'),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  ElevatedButton.icon(
-                    onPressed: _handleFacebookSignUp,
-                    icon: const Icon(Icons.facebook, color: Colors.blue),
-                    label: const Text('Register with Facebook'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      minimumSize: const Size(double.infinity, 50),
-                      side: const BorderSide(color: Colors.black),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
                 ],
               ),
             ),

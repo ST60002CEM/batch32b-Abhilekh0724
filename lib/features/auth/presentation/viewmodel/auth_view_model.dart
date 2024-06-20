@@ -1,70 +1,82 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:student_management_starter/core/common/my_snackbar.dart';
+import 'package:student_management_starter/features/auth/domain/entity/auth_entity.dart';
+import 'package:student_management_starter/features/auth/domain/usecases/auth_usecase.dart';
+import 'package:student_management_starter/features/auth/presentation/navigator/login_navigator.dart';
+import 'package:student_management_starter/features/auth/presentation/state/auth_state.dart';
 
-import '../../../../screen/dashboard_screen.dart';
-import '../view/register_view.dart'; // Replace with your dashboard screen import
+final authViewModelProvider = StateNotifierProvider<AuthViewModel, AuthState>(
+  (ref) => AuthViewModel(
+    ref.read(loginViewNavigatorProvider),
+    ref.read(authUseCaseProvider),
+  ),
+);
 
-final authViewModelProvider = ChangeNotifierProvider<AuthViewModel>((ref) => AuthViewModel());
+class AuthViewModel extends StateNotifier<AuthState> {
+  AuthViewModel(this.navigator, this.authUseCase) : super(AuthState.initial());
+  final AuthUseCase authUseCase;
+  final LoginViewNavigator navigator;
 
-class AuthViewModel extends ChangeNotifier {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  Future<void> loginStudent(String username, String password) async {
-    // Replace with your login logic
-    // For demonstration, we just print the username and password
-    print('Logging in with username: $username and password: $password');
+  Future<void> uploadImage(File? file) async {
+    state = state.copyWith(isLoading: true);
+    var data = await authUseCase.uploadProfilePicture(file!);
+    data.fold(
+      (l) {
+        state = state.copyWith(isLoading: false, error: l.error);
+      },
+      (imageName) {
+        state =
+            state.copyWith(isLoading: false, error: null, imageName: imageName);
+      },
+    );
   }
 
-  void openRegisterView(BuildContext context) {
-    // Navigate to RegisterScreen or handle register logic
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterView()));
-  }
-
-  Future<void> handleGoogleSignIn(BuildContext context) async {
-    try {
-      await _googleSignIn.signIn();
-      // Handle successful login here
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const DashboardScreen()),
-      );
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Google sign-in failed: $error')),
-      );
-    }
-  }
-
-  Future<void> handleFacebookSignIn(BuildContext context) async {
-    try {
-      final result = await FacebookAuth.instance.login();
-      if (result.status == LoginStatus.success) {
-        // Handle successful login here
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const DashboardScreen()),
+  Future<void> registerStudent(AuthEntity student) async {
+    state = state.copyWith(isLoading: true);
+    var data = await authUseCase.registerStudent(student);
+    data.fold(
+      (failure) {
+        state = state.copyWith(
+          isLoading: false,
+          error: failure.error,
         );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Facebook sign-in failed: ${result.status}')),
-        );
-      }
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Facebook sign-in failed: $error')),
-      );
-    }
+        showMySnackBar(message: failure.error, color: Colors.red);
+      },
+      (success) {
+        state = state.copyWith(isLoading: false, error: null);
+        showMySnackBar(message: "Successfully registered");
+      },
+    );
   }
 
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
+  loginStudent(
+    String username,
+    String password,
+  ) async {
+    state = state.copyWith(isLoading: true);
+    var data = await authUseCase.loginStudent(username, password);
+    data.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, error: failure.error);
+        showMySnackBar(message: failure.error, color: Colors.red);
+      },
+      (success) {
+        state = state.copyWith(isLoading: false, error: null);
+        openHomeView();
+      },
+    );
+  }
+
+
+
+  void openRegisterView() {
+    navigator.openRegisterView();
+  }
+
+  void openHomeView() {
+    navigator.openHomeView();
   }
 }
