@@ -1,3 +1,4 @@
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -21,12 +22,10 @@ class AuthHiveModel {
   final String lname;
 
   @HiveField(3)
-  final String phone;
+  final String email;
+
 
   @HiveField(4)
-  final String username;
-
-  @HiveField(5)
   final String password;
 
   // Constructor
@@ -34,8 +33,7 @@ class AuthHiveModel {
     String? userId,
     required this.fname,
     required this.lname,
-    required this.phone,
-    required this.username,
+    required this.email,
     required this.password,
   }) : userId = userId ?? const Uuid().v4();
 
@@ -45,8 +43,7 @@ class AuthHiveModel {
     userId: '',
     fname: '',
     lname: '',
-    phone: '',
-    username: '',
+    email: '',
     password: '',
   );
 
@@ -55,8 +52,7 @@ class AuthHiveModel {
     id: userId,
     fname: fname,
     lname: lname,
-    phone: phone,
-    username: username,
+    email: email,
     password: password,
   );
 
@@ -65,8 +61,7 @@ class AuthHiveModel {
     userId: const Uuid().v4(),
     fname: entity.fname,
     lname: entity.lname,
-    phone: entity.phone,
-    username: entity.username,
+    email: entity.email,
     password: entity.password,
   );
 
@@ -76,6 +71,6 @@ class AuthHiveModel {
 
   @override
   String toString() {
-    return 'userId: $userId, fname: $fname, lname: $lname, phone: $phone, username: $username, password: $password';
+    return 'userId: $userId, fname: $fname, lname: $lname, email: $email, password: $password';
   }
 }

@@ -1,51 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+final googleSignInProvider = Provider((ref) => GoogleSignIn());
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+final facebookAuthProvider = Provider((ref) => FacebookAuth.instance);
+
+class RegisterView extends ConsumerWidget {
+  const RegisterView({Key? key}) : super(key: key);
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _formKey = GlobalKey<FormState>();
+    final TextEditingController _firstNameController = TextEditingController();
+    final TextEditingController _lastNameController = TextEditingController();
+    final TextEditingController _emailController = TextEditingController();
+    final TextEditingController _passwordController = TextEditingController();
+    final TextEditingController _confirmPasswordController = TextEditingController();
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+    final googleSignIn = ref.watch(googleSignInProvider);
+    final facebookAuth = ref.watch(facebookAuthProvider);
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  Future<void> _handleGoogleSignUp() async {
-    try {
-      await _googleSignIn.signIn();
-      // Handle successful registration here
-    } catch (error) {
-      // Handle registration error here
-    }
-  }
-
-
-  Future<void> _handleFacebookSignUp() async {
-    try {
-      final result = await FacebookAuth.instance.login();
-      if (result.status == LoginStatus.success) {
+    Future<void> _handleGoogleSignUp() async {
+      try {
+        await googleSignIn.signIn();
         // Handle successful registration here
-      } else {
+      } catch (error) {
         // Handle registration error here
       }
-    } catch (error) {
-      // Handle registration error here
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
+    Future<void> _handleFacebookSignUp() async {
+      try {
+        final result = await facebookAuth.login();
+        if (result.status == LoginStatus.success) {
+          // Handle successful registration here
+        } else {
+          // Handle registration error here
+        }
+      } catch (error) {
+        // Handle registration error here
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[50],
@@ -192,7 +190,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-
               ],
             ),
           ),

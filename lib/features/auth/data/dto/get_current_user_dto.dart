@@ -10,17 +10,13 @@ class GetCurrentUserDto {
   final String id;
   final String fname;
   final String lname;
-  final String phone;
-  final String image;
-  final String username;
+  final String email;
 
   GetCurrentUserDto({
     required this.id,
     required this.fname,
     required this.lname,
-    required this.phone,
-    required this.image,
-    required this.username,
+    required this.email,
   });
 
   AuthEntity toEntity() {
@@ -28,9 +24,7 @@ class GetCurrentUserDto {
       id: id,
       fname: fname,
       lname: lname,
-      image: image,
-      phone: phone,
-      username: username,
+      email: email,
       password: '',
     );
   }

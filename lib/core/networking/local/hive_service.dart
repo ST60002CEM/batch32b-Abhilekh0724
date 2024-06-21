@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../app/constants/hive_table_constant.dart';
@@ -16,25 +16,23 @@ class HiveService {
     Hive.registerAdapter(AuthHiveModelAdapter());
   }
 
-  // ======================== User Queries ========================
-
   Future<void> addUser(AuthHiveModel user) async {
     var box = await Hive.openBox<AuthHiveModel>(HiveTableConstant.userBox);
-    await box.put(user.username, user); // Using username as the key
-    box.close();
+    await box.put(user.userId, user);
   }
 
-  Future<AuthHiveModel?> login(String username, String password) async {
+  Future<AuthHiveModel?> login(String email, String password) async {
     var box = await Hive.openBox<AuthHiveModel>(HiveTableConstant.userBox);
-    try {
-      var user = box.values.firstWhere(
-            (element) => element.username == username && element.password == password,
-      );
-      return user;
-    } catch (e) {
-      return null; // No matching user found
-    } finally {
-      box.close();
-    }
+    var user = box.values.firstWhere(
+            (element) => element.email == email && element.password == password);
+    box.close();
+    return user;
+  }
+
+  Future<List<AuthHiveModel>> getAllUsers() async {
+    var box = await Hive.openBox<AuthHiveModel>(HiveTableConstant.userBox);
+    var users = box.values.toList();
+    box.close();
+    return users;
   }
 }

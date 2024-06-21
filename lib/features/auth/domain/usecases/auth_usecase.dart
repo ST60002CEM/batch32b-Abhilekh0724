@@ -24,11 +24,9 @@ class AuthUseCase {
     return await _authRepository.registerUser(user);
   }
 
-  Future<Either<Failure, bool>> loginUser(String username, String password) async {
-    return await _authRepository.loginUser(username, password);
+  Future<Either<Failure, bool>> loginUser(String email, String password) async {
+    return await _authRepository.loginUser(email, password);
   }
 
-  Future<Either<Failure, AuthEntity>> getCurrentUser() async {
-    return await _authRepository.getCurrentUser();
   }
-}
+

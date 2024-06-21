@@ -19,13 +19,8 @@ class AuthRemoteRepository implements IAuthRepository {
   AuthRemoteRepository(this._authRemoteDataSource);
 
   @override
-  Future<Either<Failure, String>> uploadProfilePicture(File file) {
-    return _authRemoteDataSource.uploadProfilePicture(file);
-  }
-
-  @override
-  Future<Either<Failure, bool>> loginUser(String username, String password) {
-    return _authRemoteDataSource.loginUser(username, password);
+  Future<Either<Failure, bool>> loginUser(String email, String password) {
+    return _authRemoteDataSource.loginUser(email, password);
   }
 
   @override
@@ -34,7 +29,7 @@ class AuthRemoteRepository implements IAuthRepository {
   }
 
   @override
-  Future<Either<Failure, AuthEntity>> getCurrentUser() {
-    return _authRemoteDataSource.getCurrentUser();
+  Future<Either<Failure, String>> uploadProfilePicture(File file) {
+    return _authRemoteDataSource.uploadProfilePicture(file);
   }
 }

@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:venuevendor/features/auth/presentation/view/register_view.dart';
-
-import '../../../../core/common/my_snackbar.dart';
 import '../../../home/presentation/view/home_view.dart';
 import '../viewmodel/auth_view_model.dart';
 
-class LoginView extends ConsumerWidget {
+class LoginView extends ConsumerStatefulWidget {
   const LoginView({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _LoginViewState createState() => _LoginViewState();
+}
+
+class _LoginViewState extends ConsumerState<LoginView> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authViewModel = ref.watch(authViewModelProvider);
 
     return Scaffold(
@@ -31,11 +45,16 @@ class LoginView extends ConsumerWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
-                _LoginForm(authViewModel: authViewModel),
+                _LoginForm(
+                  authViewModel: authViewModel,
+                  formKey: _formKey,
+                  emailController: _emailController,
+                  passwordController: _passwordController,
+                ),
                 const SizedBox(height: 20),
                 LoginContainer(
-                  emailController: authViewModel.emailController,
-                  passwordController: authViewModel.passwordController,
+                  emailController: _emailController,
+                  passwordController: _passwordController,
                   handleGoogleSignIn: () async {
                     try {
                       await authViewModel.handleGoogleSignIn(context);
@@ -45,7 +64,7 @@ class LoginView extends ConsumerWidget {
                         MaterialPageRoute(builder: (context) => const HomeView()),
                       );
                     } catch (error) {
-                      showMySnackBar(message: 'Google sign-in failed: $error');
+                      showMySnackBar(context, 'Google sign-in failed: $error');
                     }
                   },
                   handleFacebookSignIn: () async {
@@ -57,7 +76,7 @@ class LoginView extends ConsumerWidget {
                         MaterialPageRoute(builder: (context) => const HomeView()),
                       );
                     } catch (error) {
-                      showMySnackBar(message: 'Facebook sign-in failed: $error');
+                      showMySnackBar(context, 'Facebook sign-in failed: $error');
                     }
                   },
                 ),
@@ -70,42 +89,47 @@ class LoginView extends ConsumerWidget {
   }
 }
 
-class _LoginForm extends StatefulWidget {
+class _LoginForm extends ConsumerStatefulWidget {
   final AuthViewModel authViewModel;
+  final GlobalKey<FormState> formKey;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
 
-  const _LoginForm({Key? key, required this.authViewModel}) : super(key: key);
+  const _LoginForm({
+    Key? key,
+    required this.authViewModel,
+    required this.formKey,
+    required this.emailController,
+    required this.passwordController,
+  }) : super(key: key);
 
   @override
-  __LoginFormState createState() => __LoginFormState();
+  _LoginFormState createState() => _LoginFormState();
 }
 
-class __LoginFormState extends State<_LoginForm> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
+class _LoginFormState extends ConsumerState<_LoginForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      key: widget.formKey,
       child: Column(
         children: [
           TextFormField(
-            controller: _usernameController,
+            controller: widget.emailController,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
-              labelText: 'Username',
+              labelText: 'Email',
             ),
             validator: (value) {
               if (value!.isEmpty) {
-                return 'Please enter username';
+                return 'Please enter Email';
               }
               return null;
             },
           ),
           const SizedBox(height: 10),
           TextFormField(
-            controller: _passwordController,
+            controller: widget.passwordController,
             obscureText: true,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
@@ -120,17 +144,17 @@ class __LoginFormState extends State<_LoginForm> {
           ),
           const SizedBox(height: 10),
           ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                widget.authViewModel.loginUser(
-                  _usernameController.text,
-                  _passwordController.text,
+            onPressed: () async {
+              if (widget.formKey.currentState!.validate()) {
+                await ref.read(authViewModelProvider.notifier).loginUser(
+                  widget.emailController.text,
+                  widget.passwordController.text,
                 );
-                // Navigate to HomeView after successful login
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => const HomeView()),
-                // );
+                // Navigator to HomeView after successful login
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeView()),
+                );
               }
             },
             child: const Text('Login'),
@@ -141,7 +165,7 @@ class __LoginFormState extends State<_LoginForm> {
   }
 }
 
-class LoginContainer extends StatelessWidget {
+class LoginContainer extends ConsumerStatefulWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final VoidCallback handleGoogleSignIn;
@@ -156,13 +180,18 @@ class LoginContainer extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _LoginContainerState createState() => _LoginContainerState();
+}
+
+class _LoginContainerState extends ConsumerState<LoginContainer> {
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         const Divider(),
         const SizedBox(height: 20),
         ElevatedButton.icon(
-          onPressed: handleGoogleSignIn,
+          onPressed: widget.handleGoogleSignIn,
           icon: Image.asset(
             'assets/icons/google.png',
             height: 24.0,
@@ -178,7 +207,7 @@ class LoginContainer extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         ElevatedButton.icon(
-          onPressed: handleFacebookSignIn,
+          onPressed: widget.handleFacebookSignIn,
           icon: const Icon(Icons.facebook, color: Colors.blue),
           label: const Text('Login with Facebook'),
           style: ElevatedButton.styleFrom(
@@ -207,4 +236,9 @@ class LoginContainer extends StatelessWidget {
       ],
     );
   }
+}
+
+void showMySnackBar(BuildContext context, String message) {
+  final snackBar = SnackBar(content: Text(message));
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
