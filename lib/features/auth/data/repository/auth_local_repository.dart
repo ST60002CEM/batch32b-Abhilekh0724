@@ -34,7 +34,6 @@ class AuthLocalRepository implements IAuthRepository {
     return const Right("");
   }
 
-  @override
   Future<Either<Failure, AuthEntity>> getCurrentUser() {
     // TODO: implement getCurrentUser
     throw UnimplementedError();
