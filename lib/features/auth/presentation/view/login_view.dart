@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:venuevendor/features/auth/presentation/view/register_view.dart';
+import 'package:venuevendor/features/home/presentation/view/bottom_view/dashboard_view.dart';
 import '../../../home/presentation/view/home_view.dart';
 import '../viewmodel/auth_view_model.dart';
 
@@ -150,7 +151,7 @@ class _LoginFormState extends ConsumerState<_LoginForm> {
                 // Navigator to HomeView after successful login
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomeView()),
+                  MaterialPageRoute(builder: (context) => const DashboardView()),
                 );
               }
             },
