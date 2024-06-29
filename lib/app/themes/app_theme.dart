@@ -13,7 +13,7 @@ class AppTheme {
               primary: ThemeConstant.darkPrimaryColor,
             )
           : const ColorScheme.light(
-              primary: Colors.white54,
+              primary: Colors.green,
             ),
       brightness: isDark ? Brightness.dark : Brightness.light,
       fontFamily: 'Montserrat',
