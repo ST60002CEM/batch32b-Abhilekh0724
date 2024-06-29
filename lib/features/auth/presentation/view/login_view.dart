@@ -36,14 +36,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Login',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontFamily: 'Brand Bold',
-                  ),
-                  textAlign: TextAlign.center,
-                ),
                 const SizedBox(height: 20),
                 _LoginForm(
                   authViewModel: authViewModel,
@@ -114,6 +106,11 @@ class _LoginFormState extends ConsumerState<_LoginForm> {
       key: widget.formKey,
       child: Column(
         children: [
+                    Image.asset(
+            'assets/icons/Venue.png',
+            height: 200.0,
+          ),
+          const SizedBox(height: 20),
           TextFormField(
             controller: widget.emailController,
             decoration: const InputDecoration(
