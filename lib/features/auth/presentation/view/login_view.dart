@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:venuevendor/features/auth/presentation/view/register_view.dart';
+import 'package:venuevendor/features/home/presentation/view/bottom_view/dashboard_view.dart';
 import '../../../home/presentation/view/home_view.dart';
 import '../viewmodel/auth_view_model.dart';
 
@@ -36,14 +37,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Login',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontFamily: 'Brand Bold',
-                  ),
-                  textAlign: TextAlign.center,
-                ),
                 const SizedBox(height: 20),
                 _LoginForm(
                   authViewModel: authViewModel,
@@ -114,6 +107,11 @@ class _LoginFormState extends ConsumerState<_LoginForm> {
       key: widget.formKey,
       child: Column(
         children: [
+                    Image.asset(
+            'assets/icons/Venue.png',
+            height: 200.0,
+          ),
+          const SizedBox(height: 20),
           TextFormField(
             controller: widget.emailController,
             decoration: const InputDecoration(
@@ -153,7 +151,7 @@ class _LoginFormState extends ConsumerState<_LoginForm> {
                 // Navigator to HomeView after successful login
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomeView()),
+                  MaterialPageRoute(builder: (context) => const DashboardView()),
                 );
               }
             },

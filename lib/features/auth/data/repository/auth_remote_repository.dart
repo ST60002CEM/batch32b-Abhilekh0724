@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,6 +16,11 @@ final authRemoteRepositoryProvider = Provider<IAuthRepository>((ref) {
 class AuthRemoteRepository implements IAuthRepository {
   final AuthRemoteDataSource _authRemoteDataSource;
   AuthRemoteRepository(this._authRemoteDataSource);
+
+  @override
+  Future<Either<Failure, AuthEntity>> getCurrentUser() {
+    return _authRemoteDataSource.getCurrentUser();
+  }
 
   @override
   Future<Either<Failure, bool>> loginUser(String email, String password) {

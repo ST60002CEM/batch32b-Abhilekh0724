@@ -13,7 +13,7 @@ class AppTheme {
               primary: ThemeConstant.darkPrimaryColor,
             )
           : const ColorScheme.light(
-              primary: Color.fromARGB(255, 17, 119, 20),
+              primary: Colors.green,
             ),
       brightness: isDark ? Brightness.dark : Brightness.light,
       fontFamily: 'Montserrat',
@@ -69,7 +69,7 @@ class AppTheme {
       ),
       //Bottom navigation bar theme
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Colors.lightGreen,
+        backgroundColor: Colors.white54,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.black,
         type: BottomNavigationBarType.fixed,

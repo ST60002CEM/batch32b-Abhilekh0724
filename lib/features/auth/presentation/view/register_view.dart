@@ -50,10 +50,9 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
-        centerTitle: true,
         backgroundColor: Colors.red[50],
       ),
+      backgroundColor: Colors.red[50],
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -62,6 +61,11 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+            Image.asset(
+              'assets/icons/Venue.png',
+              height: 200.0,
+            ),
+            const SizedBox(height: 20),
                 Row(
                   children: [
                     Expanded(
@@ -186,7 +190,7 @@ class _RegisterViewState extends ConsumerState<RegisterView> {
                   icon: const Icon(Icons.facebook, color: Colors.blue),
                   label: const Text('Register with Facebook'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
+                    backgroundColor: Colors.black,
                     minimumSize: const Size(double.infinity, 50),
                     side: const BorderSide(color: Colors.black),
                   ),

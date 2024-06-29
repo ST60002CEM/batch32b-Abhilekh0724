@@ -16,6 +16,10 @@ class AuthUseCase {
 
   AuthUseCase(this._authRepository);
 
+  Future<Either<Failure, AuthEntity>> getCurrentUser() async {
+    return await _authRepository.getCurrentUser();
+  }
+
   Future<Either<Failure, String>> uploadProfilePicture(File file) async {
     return await _authRepository.uploadProfilePicture(file);
   }
