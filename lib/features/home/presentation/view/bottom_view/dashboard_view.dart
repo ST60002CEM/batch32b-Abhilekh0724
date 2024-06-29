@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:venuevendor/features/home/presentation/view/bottom_view/profile_view.dart';
+import 'package:venuevendor/features/home/presentation/view/home_view.dart';
 import 'package:venuevendor/screen/checkout_screen.dart';
 import 'package:venuevendor/screen/home_screen.dart';
 import 'package:venuevendor/screen/map_screen.dart';
@@ -15,9 +17,9 @@ class DashboardView extends ConsumerWidget {
     final selectedIndex = ref.watch(selectedIndexProvider);
 
     List<Widget> lstBottomScreen = [
-      const HomeScreen(),
+      const HomeView(),
       const CheckoutScreen(),
-      const ProfileScreen(),
+      const ProfileView(),
       const MapScreen(),
     ];
 
