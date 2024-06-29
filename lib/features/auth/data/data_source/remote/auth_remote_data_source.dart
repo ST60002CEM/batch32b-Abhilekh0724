@@ -1,7 +1,10 @@
 import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart'; // Add this import if not already imported
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../../../app/constants/api_endpoint.dart';
 import '../../../../../core/failure/failure.dart';
 import '../../../../../core/networking/remote/http_service.dart';
@@ -22,10 +25,39 @@ class AuthRemoteDataSource {
   final AuthApiModel authApiModel;
   final UserSharedPrefs userSharedPrefs;
 
-  AuthRemoteDataSource(
-      {required this.dio,
-        required this.userSharedPrefs,
-        required this.authApiModel});
+  AuthRemoteDataSource({
+    required this.dio,
+    required this.userSharedPrefs,
+    required this.authApiModel,
+  });
+
+  Future<Either<Failure, AuthEntity>> getCurrentUser() async {
+    try {
+      // Example of GET request to fetch current user from API
+      Response response = await dio.get(
+        ApiEndpoints.currentUser,
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: 'Bearer ${await userSharedPrefs.getUserToken()}',
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        AuthEntity user = AuthEntity.fromJson(response.data);
+        return Right(user);
+      } else {
+        return Left(Failure(
+          error: 'Failed to get current user',
+          statusCode: response.statusCode.toString(),
+        ));
+      }
+    } on DioError catch (e) {
+      return Left(Failure(
+        error: e.error.toString(),
+        statusCode: e.response?.statusCode.toString() ?? '0',
+      ));
+    }
+  }
 
   Future<Either<Failure, bool>> registerUser(AuthEntity user) async {
     try {
@@ -43,7 +75,7 @@ class AuthRemoteDataSource {
           ),
         );
       }
-    } on DioException catch (e) {
+    } on DioError catch (e) {
       return Left(
         Failure(
           error: e.error.toString(),
@@ -53,20 +85,15 @@ class AuthRemoteDataSource {
     }
   }
 
-  // Upload image using multipart
-  Future<Either<Failure, String>> uploadProfilePicture(
-      File image,
-      ) async {
+  Future<Either<Failure, String>> uploadProfilePicture(File file) async {
     try {
-      String fileName = image.path.split('/').last;
-      FormData formData = FormData.fromMap(
-        {
-          'profilePicture': await MultipartFile.fromFile(
-            image.path,
-            filename: fileName,
-          ),
-        },
-      );
+      String fileName = file.path.split('/').last;
+      FormData formData = FormData.fromMap({
+        'profilePicture': await MultipartFile.fromFile(
+          file.path,
+          filename: fileName,
+        ),
+      });
 
       Response response = await dio.post(
         ApiEndpoints.uploadImage,
@@ -74,7 +101,7 @@ class AuthRemoteDataSource {
       );
 
       return Right(response.data["data"]);
-    } on DioException catch (e) {
+    } on DioError catch (e) {
       return Left(
         Failure(
           error: e.error.toString(),
@@ -84,10 +111,7 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future<Either<Failure, bool>> loginUser(
-      String email,
-      String password,
-      ) async {
+  Future<Either<Failure, bool>> loginUser(String email, String password) async {
     try {
       Response response = await dio.post(
         ApiEndpoints.login,
@@ -109,7 +133,7 @@ class AuthRemoteDataSource {
           ),
         );
       }
-    } on DioException catch (e) {
+    } on DioError catch (e) {
       return Left(
         Failure(
           error: e.error.toString(),

@@ -1,14 +1,13 @@
-import 'package:equatable/equatable.dart';
+import 'dart:convert';
 
-class   AuthEntity extends Equatable {
+class AuthEntity {
   final String? id;
   final String fname;
   final String lname;
   final String email;
-
   final String password;
 
-  const AuthEntity({
+  AuthEntity({
     this.id,
     required this.fname,
     required this.lname,
@@ -16,7 +15,23 @@ class   AuthEntity extends Equatable {
     required this.password,
   });
 
-  @override
-  List<Object?> get props =>
-      [id, fname, lname, email, password];
+  factory AuthEntity.fromJson(Map<String, dynamic> json) {
+    return AuthEntity(
+      id: json['id'],
+      fname: json['fname'],
+      lname: json['lname'],
+      email: json['email'],
+      password: json['password'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'fname': fname,
+      'lname': lname,
+      'email': email,
+      'password': password,
+    };
+  }
 }
