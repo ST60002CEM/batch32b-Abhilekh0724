@@ -149,10 +149,10 @@ class _LoginFormState extends ConsumerState<_LoginForm> {
                   widget.passwordController.text,
                 );
                 // Navigator to HomeView after successful login
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const DashboardView()),
-                );
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => const DashboardView()),
+                // );
               }
             },
             child: const Text('Login'),
