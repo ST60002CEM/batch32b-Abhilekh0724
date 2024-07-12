@@ -7,6 +7,7 @@ import '../../../../screen/dashboard_screen.dart';
 import '../../domain/entity/auth_entity.dart';
 import '../../domain/usecases/auth_usecase.dart';
 import '../view/register_view.dart'; // Replace with your register screen import
+
 final authViewModelProvider = ChangeNotifierProvider<AuthViewModel>((ref) => AuthViewModel(authUseCase: ref.read(authUseCaseProvider)));
 
 class AuthViewModel extends ChangeNotifier {
@@ -25,9 +26,25 @@ class AuthViewModel extends ChangeNotifier {
 
   AuthViewModel({required this.authUseCase});
 
-  Future<void> loginUser(String email, String password) async {
-
-    print('Logging in with email: $email and password: $password');
+  Future<void> loginUser(BuildContext context, String email, String password) async {
+    _setLoading(true);
+    var data = await authUseCase.loginUser(email, password);
+    data.fold(
+          (failure) {
+        _setLoading(false);
+        _setError(failure.error);
+        showMySnackBar(context, message: failure.error, color: Colors.red);
+      },
+          (success) {
+        _setLoading(false);
+        _setError(null);
+        showMySnackBar(context, message: "Successfully logged in");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
+        );
+      },
+    );
   }
 
   void openRegisterView(BuildContext context) {
