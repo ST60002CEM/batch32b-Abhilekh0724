@@ -19,7 +19,7 @@ class App extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       title: 'Student Management',
       theme: AppTheme.getApplicationTheme(false),
-      home: const SplashView(),
+      home: const DashboardView(),
     );
   }
 }
