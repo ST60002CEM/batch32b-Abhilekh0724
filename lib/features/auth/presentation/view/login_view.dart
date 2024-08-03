@@ -107,7 +107,7 @@ class _LoginFormState extends ConsumerState<_LoginForm> {
       key: widget.formKey,
       child: Column(
         children: [
-                    Image.asset(
+          Image.asset(
             'assets/icons/Venue.png',
             height: 200.0,
           ),
@@ -144,15 +144,11 @@ class _LoginFormState extends ConsumerState<_LoginForm> {
           ElevatedButton(
             onPressed: () async {
               if (widget.formKey.currentState!.validate()) {
-                await ref.read(authViewModelProvider.notifier).loginUser(
+                await widget.authViewModel.loginUser(
+                  context,
                   widget.emailController.text,
                   widget.passwordController.text,
                 );
-                // Navigator to HomeView after successful login
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => const DashboardView()),
-                // );
               }
             },
             child: const Text('Login'),
