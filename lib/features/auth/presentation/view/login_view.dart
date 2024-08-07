@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:venuevendor/features/auth/presentation/view/register_view.dart';
-import 'package:venuevendor/features/home/presentation/view/bottom_view/dashboard_view.dart';
-import '../../../home/presentation/view/home_view.dart';
+import 'package:venuevendor/features/home/presentation/presentation/view/home_view.dart';
 import '../viewmodel/auth_view_model.dart';
 
 class LoginView extends ConsumerStatefulWidget {
