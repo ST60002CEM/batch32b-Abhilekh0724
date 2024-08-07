@@ -32,8 +32,4 @@ class AuthRemoteRepository implements IAuthRepository {
     return _authRemoteDataSource.registerUser(user);
   }
 
-  @override
-  Future<Either<Failure, String>> uploadProfilePicture(File file) {
-    return _authRemoteDataSource.uploadProfilePicture(file);
-  }
 }

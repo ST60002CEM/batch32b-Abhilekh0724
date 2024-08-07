@@ -4,7 +4,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
-import 'dart:io' as _i7;
 
 import 'package:dartz/dartz.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
@@ -66,33 +65,6 @@ class MockAuthUseCase extends _i1.Mock implements _i3.AuthUseCase {
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, _i6.AuthEntity>>);
-
-  @override
-  _i4.Future<_i2.Either<_i5.Failure, String>> uploadProfilePicture(
-          _i7.File? file) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #uploadProfilePicture,
-          [file],
-        ),
-        returnValue: _i4.Future<_i2.Either<_i5.Failure, String>>.value(
-            _FakeEither_0<_i5.Failure, String>(
-          this,
-          Invocation.method(
-            #uploadProfilePicture,
-            [file],
-          ),
-        )),
-        returnValueForMissingStub:
-            _i4.Future<_i2.Either<_i5.Failure, String>>.value(
-                _FakeEither_0<_i5.Failure, String>(
-          this,
-          Invocation.method(
-            #uploadProfilePicture,
-            [file],
-          ),
-        )),
-      ) as _i4.Future<_i2.Either<_i5.Failure, String>>);
 
   @override
   _i4.Future<_i2.Either<_i5.Failure, bool>> registerUser(

@@ -85,32 +85,6 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future<Either<Failure, String>> uploadProfilePicture(File file) async {
-    try {
-      String fileName = file.path.split('/').last;
-      FormData formData = FormData.fromMap({
-        'profilePicture': await MultipartFile.fromFile(
-          file.path,
-          filename: fileName,
-        ),
-      });
-
-      Response response = await dio.post(
-        ApiEndpoints.uploadImage,
-        data: formData,
-      );
-
-      return Right(response.data["data"]);
-    } on DioError catch (e) {
-      return Left(
-        Failure(
-          error: e.error.toString(),
-          statusCode: e.response?.statusCode.toString() ?? '0',
-        ),
-      );
-    }
-  }
-
   Future<Either<Failure, bool>> loginUser(String email, String password) async {
     try {
       Response response = await dio.post(
