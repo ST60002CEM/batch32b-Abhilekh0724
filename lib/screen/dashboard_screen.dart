@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:venuevendor/features/home/presentation/presentation/view/home_view.dart';
 import 'package:venuevendor/screen/checkout_screen.dart';
-import 'package:venuevendor/screen/home_screen.dart';
-import 'package:venuevendor/screen/map_screen.dart';
 import 'package:venuevendor/screen/profile_screen.dart';
+import 'package:venuevendor/screen/map_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -12,9 +12,11 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  int _selectedIndex = 0;
-  List<Widget> lstBottomScreen = [
-    const HomeScreen(),
+  int _selectedIndex = 0; // Keeps track of the selected tab
+
+  // List of pages for the BottomNavigationBar
+  final List<Widget> _pages = [
+    const HomeView(),
     const CheckoutScreen(),
     const ProfileScreen(),
     const MapScreen(),
@@ -32,7 +34,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             leading: IconButton(
               icon: const Icon(
                 Icons.search,
-                size: 30.0,  // Adjust the size as needed
+                size: 30.0, // Adjust the size as needed
               ),
               onPressed: () {
                 // Handle search action
@@ -42,14 +44,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Image.asset(
                 'assets/icons/Venue.png', // Path to the logo image
                 height: 70,
-                width: 70,// Adjust the height as needed
+                width: 70, // Adjust the height as needed
               ),
             ),
             actions: [
               IconButton(
                 icon: const Icon(
                   Icons.person,
-                  size: 30.0,  // Adjust the size as needed
+                  size: 30.0, // Adjust the size as needed
                 ),
                 onPressed: () {
                   setState(() {
@@ -59,11 +61,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ],
           ),
-
         ),
       ),
       backgroundColor: Colors.red[50],
-      body: lstBottomScreen[_selectedIndex],
+      body: _pages[_selectedIndex], // Displays the currently selected page
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.grey[600],
         selectedItemColor: Colors.white,
@@ -71,11 +72,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         currentIndex: _selectedIndex,
         onTap: (index) {
           setState(() {
-            _selectedIndex = index;
+            _selectedIndex = index; // Update the selected index
           });
         },
         type: BottomNavigationBarType.fixed,
-        iconSize: 40.0,  // Adjust the size as needed
+        iconSize: 40.0, // Adjust the size as needed
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
