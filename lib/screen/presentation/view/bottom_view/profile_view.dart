@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../app/constants/api_endpoint.dart';
-import '../../../../features/home/presentation/presentation/viewmodel/profile_view_model.dart';
+
+import '../../viewmodel/profile_view_model.dart';
 
 
 class ProfileView extends ConsumerStatefulWidget {
