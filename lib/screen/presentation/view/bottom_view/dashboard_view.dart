@@ -110,7 +110,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     List<Widget> lstBottomScreen = [
       const HomeView(),
       const CheckoutScreen(),
-      const ProfileView(),
+      // const ProfileView(),
       const MapScreen(),
     ];
 
