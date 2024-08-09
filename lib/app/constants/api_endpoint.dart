@@ -21,7 +21,7 @@ class ApiEndpoints {
   static const String updateCategory = "admin/update/";
   static const String deleteCategory = "admin/delete/";
   static const String searchCategory = "admin/search";
-  // static const String getCategoryById = "admin/get/";
+  static const String getCategoryById = "admin/get/";
 
   // ====================== Review Routes ======================
   static const String review = "review/reviews";
