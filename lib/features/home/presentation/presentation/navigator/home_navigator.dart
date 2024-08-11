@@ -1,17 +1,38 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+  // import 'package:flutter_riverpod/flutter_riverpod.dart';
+  //
+  // import '../../../../../app/navigator/navigator.dart';
+  // import '../../../../auth/presentation/navigator/login_navigator.dart';
+  // import '../view/home_view.dart';
+  //
+  // final homeViewNavigatorProvider = Provider<HomeViewNavigator>((ref) {
+  //   return HomeViewNavigator();
+  // });
+  //
+  // class HomeViewNavigator with LoginViewRoute {}
+  //
+  // mixin HomeViewRoute {
+  //   openHomeView() {
+  //     NavigateRoute.popAndPushRoute(const HomeView());
+  //   }
+  // }
+  import 'package:flutter_riverpod/flutter_riverpod.dart';
+  import '../../../../../app/navigator/navigator.dart';
+  import '../../../../auth/presentation/navigator/login_navigator.dart';
+  import '../view/home_view.dart';
+  import '../view/category_detail_view.dart';
 
-import '../../../../../app/navigator/navigator.dart';
-import '../../../../auth/presentation/navigator/login_navigator.dart';
-import '../view/home_view.dart';
+  final homeViewNavigatorProvider = Provider<HomeViewNavigator>((ref) {
+    return HomeViewNavigator();
+  });
 
-final homeViewNavigatorProvider = Provider<HomeViewNavigator>((ref) {
-  return HomeViewNavigator();
-});
-
-class HomeViewNavigator with LoginViewRoute {}
-
-mixin HomeViewRoute {
-  openHomeView() {
-    NavigateRoute.popAndPushRoute(const HomeView());
+  class HomeViewNavigator with LoginViewRoute, HomeViewRoute {
+    openCategoryDetailView(String categoryId) {
+      NavigateRoute.pushRoute(CategoryDetailView(categoryId: categoryId));
+    }
   }
-}
+
+  mixin HomeViewRoute {
+    openHomeView() {
+      NavigateRoute.popAndPushRoute(const HomeView());
+    }
+  }
