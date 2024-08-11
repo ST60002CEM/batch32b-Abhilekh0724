@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
-import '../../../core/common/my_snackbar.dart';
-import '../../../features/auth/domain/usecases/auth_usecase.dart';
-import '../../../features/home/presentation/presentation/state/current_user_state.dart';
+import '../../../../../core/common/my_snackbar.dart';
+import '../../../../auth/domain/usecases/auth_usecase.dart';
+import '../state/current_user_state.dart';
 
 
 final profileViewModelProvider = StateNotifierProvider<ProfileViewModel,CurrentUserState>(
