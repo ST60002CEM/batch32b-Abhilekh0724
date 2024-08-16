@@ -16,7 +16,7 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
   VenueCard? venueCard;
   bool isLoading = true;
   bool hasError = false;
-  DateTime? _selectedDate; // Nullable date for booking
+  DateTime? _selectedDate;
 
   @override
   void initState() {
@@ -63,7 +63,7 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
       return;
     }
 
-    final userId = '66b4690da3c2323e47087524'; // Fetch the actual user ID from a secure source
+    final userId = '66b4690da3c2323e47087524';
     try {
       await ApiService.bookCategory(widget.categoryId, userId, _selectedDate!);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -89,7 +89,6 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
               height: 40.0, // Adjust height if necessary
             ),
             const SizedBox(width: 8.0),
-            const Text('Category Details'),
           ],
         ),
         backgroundColor: Colors.red[50],
@@ -113,92 +112,139 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
       )
           : hasError || venueCard == null
           ? const Center(child: Text('Error loading category details'))
-          : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
-              child: Image.network(
-                'http://192.168.1.70:5500${venueCard!.photo ?? ''}',
-                height: 200.0,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, progress) {
-                  if (progress == null) {
-                    return child;
-                  } else {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const CircularProgressIndicator(),
-                          const SizedBox(height: 16.0),
-                          const Text('Loading image...'),
-                        ],
-                      ),
+          : SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(15.0),
+                child: Image.network(
+                  'http://192.168.1.70:5500${venueCard!.photo ?? ''}',
+                  height: 250.0,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, progress) {
+                    if (progress == null) {
+                      return child;
+                    } else {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 16.0),
+                            const Text('Loading image...'),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(
+                      child: Icon(Icons.error, color: Colors.red),
                     );
-                  }
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(
-                    child: Icon(Icons.error, color: Colors.red),
-                  );
-                },
+                  },
+                ),
               ),
-            ),
-            const SizedBox(height: 16.0),
-            Text(
-              venueCard!.name ?? 'No Name',
-              style: const TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
+              const SizedBox(height: 24.0),
+              Text(
+                venueCard!.name ?? 'No Name',
+                style: const TextStyle(
+                  fontSize: 28.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-            const SizedBox(height: 8.0),
-            Text(
-              venueCard!.info ?? 'No Info',
-              style: const TextStyle(fontSize: 18.0),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-            ),
-            const SizedBox(height: 8.0),
-            Text(
-              '\$${venueCard!.price?.toString() ?? "N/A"}',
-              style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-            const SizedBox(height: 16.0),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _selectedDate != null
-                        ? 'Selected Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate!)}'
-                        : 'No Date Selected',
-                    style: const TextStyle(fontSize: 18.0),
+              const SizedBox(height: 8.0),
+              Text(
+                venueCard!.info ?? 'No Info',
+                style: const TextStyle(
+                  fontSize: 18.0,
+                  color: Colors.grey,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+              const SizedBox(height: 8.0),
+              Text(
+                '\$${venueCard!.price?.toString() ?? "N/A"}',
+                style: const TextStyle(
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+              const SizedBox(height: 24.0),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12.0,
+                        horizontal: 16.0,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red[100],
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Text(
+                        _selectedDate != null
+                            ? 'Selected Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate!)}'
+                            : 'No Date Selected',
+                        style: const TextStyle(fontSize: 18.0),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  ElevatedButton(
+                    onPressed: _selectDate,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red[300],
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12.0,
+                        horizontal: 24.0,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: const Text(
+                      'Select Date',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24.0),
+              ElevatedButton(
+                onPressed: _bookCategory,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16.0,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
-                ElevatedButton(
-                  onPressed: _selectDate,
-                  child: const Text('Select Date'),
+                child: const Center(
+                  child: Text(
+                    'Book Now',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _bookCategory,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey, // Button color
               ),
-              child: const Text('Book Now'),
-            ),
-            const SizedBox(height: 16.0),
-          ],
+            ],
+          ),
         ),
       ),
     );
