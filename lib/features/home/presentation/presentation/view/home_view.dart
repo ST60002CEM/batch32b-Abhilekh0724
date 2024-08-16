@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:venuevendor/features/home/presentation/presentation/view/search_view.dart';
+
 import '../../../../../core/networking/local/api_service.dart';
 import '../../data/dto/get_all_categories_dto.dart';
 import '../../data/model/venue_card.dart';
@@ -21,6 +22,7 @@ class _HomeViewState extends State<HomeView> {
   bool isLoading = false;
   bool isSearching = false; // Flag to determine if we are searching
   String searchQuery = ''; // Store the current search query
+  String selectedSortOption = 'Price: Low to High'; // Default sort option
 
   @override
   void initState() {
@@ -52,6 +54,7 @@ class _HomeViewState extends State<HomeView> {
       setState(() {
         venueCards = dto.categories ?? []; // Handle null categories
         filteredVenueCards = venueCards; // Initialize filtered list
+        _sortVenueCards(); // Apply the default sorting
         isLoading = false;
       });
     } catch (e) {
@@ -93,7 +96,25 @@ class _HomeViewState extends State<HomeView> {
         filteredVenueCards = venueCards;
       }
 
+      _sortVenueCards(); // Reapply sorting after searching
       visibleCount = 4; // Reset visible count
+    });
+  }
+
+  void _sortVenueCards() {
+    setState(() {
+      if (selectedSortOption == 'Price: Low to High') {
+        filteredVenueCards.sort((a, b) => (a.price ?? 0).compareTo(b.price ?? 0));
+      } else if (selectedSortOption == 'Price: High to Low') {
+        filteredVenueCards.sort((a, b) => (b.price ?? 0).compareTo(a.price ?? 0));
+      }
+    });
+  }
+
+  void _onSortOptionChanged(String? newValue) {
+    setState(() {
+      selectedSortOption = newValue ?? 'Price: Low to High';
+      _sortVenueCards(); // Apply sorting
     });
   }
 
@@ -111,6 +132,22 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red[50],
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: _onSortOptionChanged,
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'Price: Low to High',
+                child: Text('Price: Low to High'),
+              ),
+              const PopupMenuItem(
+                value: 'Price: High to Low',
+                child: Text('Price: High to Low'),
+              ),
+            ],
+            icon: Icon(Icons.sort, color: Colors.red[700]),
+          ),
+        ],
       ),
       backgroundColor: Colors.red[50],
       body: isLoading && venueCards.isEmpty

@@ -2,12 +2,16 @@ import 'dart:async';
 import 'package:all_sensors2/all_sensors2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:venuevendor/features/home/presentation/presentation/view/home_view.dart';
+import 'package:venuevendor/features/book/presentation/view/booking_view.dart';
+import 'package:venuevendor/features/profile/presentation/view/profile_view.dart'; // Import ProfilePage
 import 'package:venuevendor/screen/checkout_screen.dart';
 import 'package:venuevendor/screen/map_screen.dart';
 import 'package:venuevendor/app/navigator_key/navigator_key.dart';
 import 'package:venuevendor/screen/presentation/view/bottom_view/profile_view.dart';
-import 'package:venuevendor/features/home/presentation/presentation/view/search_view.dart';
+
+
+import '../../../../features/home/presentation/presentation/view/home_view.dart';
+import '../../../../features/home/presentation/presentation/view/search_view.dart';
 
 final selectedIndexProvider = StateProvider<int>((ref) => 0);
 
@@ -115,8 +119,8 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
 
     List<Widget> lstBottomScreen = [
       const HomeView(),
-      const CheckoutScreen(),
-      const ProfileView(),
+      BookingView(userId: '66b4690da3c2323e47087524'),
+      ProfilePage(),
       const MapScreen(),
     ];
 
@@ -157,7 +161,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                   size: 30.0,
                 ),
                 onPressed: () {
-                  ref.read(selectedIndexProvider.notifier).state = 2;
+                  ref.read(selectedIndexProvider.notifier).state = 2; // Switch to ProfilePage
                 },
               ),
             ],
@@ -184,10 +188,6 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.book_online),
             label: 'Book',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorite',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.map),
