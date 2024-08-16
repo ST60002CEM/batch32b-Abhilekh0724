@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // For date formatting
 import '../../../../../core/networking/local/api_service.dart';
 import '../../data/model/venue_card.dart';
 
@@ -15,8 +16,7 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
   VenueCard? venueCard;
   bool isLoading = true;
   bool hasError = false;
-  final _reviewController = TextEditingController();
-  double _rating = 1.0;
+  DateTime? _selectedDate; // Nullable date for booking
 
   @override
   void initState() {
@@ -40,9 +40,32 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
     }
   }
 
+  Future<void> _selectDate() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null && pickedDate != _selectedDate) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
+  }
+
   Future<void> _bookCategory() async {
+    if (_selectedDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a booking date')),
+      );
+      return;
+    }
+
+    final userId = '66b4690da3c2323e47087524'; // Fetch the actual user ID from a secure source
     try {
-      await ApiService.bookCategory(widget.categoryId);
+      await ApiService.bookCategory(widget.categoryId, userId, _selectedDate!);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Booking successful!')),
       );
@@ -50,21 +73,6 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
       print('Booking Exception: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to book category')),
-      );
-    }
-  }
-
-  Future<void> _submitReview() async {
-    try {
-      await ApiService.submitReview(widget.categoryId, _rating, _reviewController.text);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Review submitted successfully!')),
-      );
-      _reviewController.clear(); // Clear the review input field
-    } catch (e) {
-      print('Review Submission Exception: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to submit review')),
       );
     }
   }
@@ -81,6 +89,7 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
               height: 40.0, // Adjust height if necessary
             ),
             const SizedBox(width: 8.0),
+            const Text('Category Details'),
           ],
         ),
         backgroundColor: Colors.red[50],
@@ -92,7 +101,16 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
       ),
       backgroundColor: Colors.red[50],
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16.0),
+            Text('Loading category details...'),
+          ],
+        ),
+      )
           : hasError || venueCard == null
           ? const Center(child: Text('Error loading category details'))
           : Padding(
@@ -111,11 +129,22 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
                   if (progress == null) {
                     return child;
                   } else {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const CircularProgressIndicator(),
+                          const SizedBox(height: 16.0),
+                          const Text('Loading image...'),
+                        ],
+                      ),
+                    );
                   }
                 },
                 errorBuilder: (context, error, stackTrace) {
-                  return const Center(child: Icon(Icons.error, color: Colors.red));
+                  return const Center(
+                    child: Icon(Icons.error, color: Colors.red),
+                  );
                 },
               ),
             ),
@@ -144,42 +173,29 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
               maxLines: 1,
             ),
             const SizedBox(height: 16.0),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _selectedDate != null
+                        ? 'Selected Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate!)}'
+                        : 'No Date Selected',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: _selectDate,
+                  child: const Text('Select Date'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _bookCategory,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey, // Button color
               ),
               child: const Text('Book Now'),
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: _reviewController,
-              decoration: const InputDecoration(
-                labelText: 'Leave a review',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 4,
-            ),
-            const SizedBox(height: 8.0),
-            Slider(
-              value: _rating,
-              min: 1,
-              max: 5,
-              divisions: 4,
-              onChanged: (value) {
-                setState(() {
-                  _rating = value;
-                });
-              },
-              label: 'Rating: ${_rating.toStringAsFixed(1)}',
-            ),
-            const SizedBox(height: 8.0),
-            ElevatedButton(
-              onPressed: _submitReview,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey, // Button color
-              ),
-              child: const Text('Submit Review'),
             ),
             const SizedBox(height: 16.0),
           ],

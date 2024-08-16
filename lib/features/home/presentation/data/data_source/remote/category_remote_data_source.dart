@@ -8,7 +8,7 @@ class CategoryRemoteDataSource {
   CategoryRemoteDataSource(this.client);
 
   Future<GetAllCategoriesDTO> getCategories() async {
-    final response = await client.get(Uri.parse('your_api_endpoint_here'));
+    final response = await client.get(Uri.parse(''));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = json.decode(response.body);
