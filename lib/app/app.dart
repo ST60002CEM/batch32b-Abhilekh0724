@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:venuevendor/app/themes/app_theme.dart';
 import 'package:venuevendor/features/auth/internet/internet_checker_view.dart';
+import 'package:venuevendor/features/book/presentation/view/booking_view.dart';
+import 'package:venuevendor/features/profile/presentation/view/profile_view.dart';
 import 'package:venuevendor/screen/dashboard_screen.dart';
 import 'package:venuevendor/screen/presentation/view/bottom_view/dashboard_view.dart';
 

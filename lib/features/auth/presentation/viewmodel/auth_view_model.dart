@@ -18,13 +18,33 @@ class AuthViewModel extends ChangeNotifier {
 
   bool _isLoading = false;
   String? _error;
+  AuthEntity? _currentUser;
 
   bool get isLoading => _isLoading;
   String? get error => _error;
+  AuthEntity? get user => _currentUser;
 
   final AuthUseCase authUseCase;
 
-  AuthViewModel({required this.authUseCase});
+  AuthViewModel({required this.authUseCase}) {
+    _fetchCurrentUser();
+  }
+
+  Future<void> _fetchCurrentUser() async {
+    _setLoading(true);
+    var result = await authUseCase.getCurrentUser();
+    result.fold(
+          (failure) {
+        _setLoading(false);
+        _setError(failure.error);
+      },
+          (user) {
+        _currentUser = user;
+        _setError(null);
+        _setLoading(false);
+      },
+    );
+  }
 
   Future<void> loginUser(BuildContext context, String email, String password) async {
     _setLoading(true);
@@ -48,27 +68,22 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   void openRegisterView(BuildContext context) {
-    // Navigate to RegisterScreen or handle register logic
     Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterView()));
   }
 
   void openLoginView(BuildContext context) {
-    // Navigate to LoginScreen or handle login logic
     Navigator.pop(context);
   }
 
   Future<void> handleGoogleSignIn(BuildContext context) async {
     try {
       await _googleSignIn.signIn();
-      // Handle successful login here
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const DashboardScreen()),
       );
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Google sign-in failed: $error')),
-      );
+      _handleSignInError(context, 'Google sign-in failed: $error');
     }
   }
 
@@ -76,20 +91,15 @@ class AuthViewModel extends ChangeNotifier {
     try {
       final result = await FacebookAuth.instance.login();
       if (result.status == LoginStatus.success) {
-        // Handle successful login here
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const DashboardScreen()),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Facebook sign-in failed: ${result.status}')),
-        );
+        _handleSignInError(context, 'Facebook sign-in failed: ${result.status}');
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Facebook sign-in failed: $error')),
-      );
+      _handleSignInError(context, 'Facebook sign-in failed: $error');
     }
   }
 
@@ -119,6 +129,10 @@ class AuthViewModel extends ChangeNotifier {
   void _setError(String? error) {
     _error = error;
     notifyListeners();
+  }
+
+  void _handleSignInError(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
