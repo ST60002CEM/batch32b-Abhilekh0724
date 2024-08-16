@@ -12,8 +12,8 @@ class ApiEndpoints {
   static const String currentUser = "${baseUrl}auth/getMe";
 
   // ====================== Profile Routes ======================
-  static const String profile = "${baseUrl}profile/";
   static const String uploadProfilePic = "${baseUrl}profile/uploadProfilePic";
+  static const String getUserInfo = "${baseUrl}profile/info";
 
   // ====================== Admin Routes ======================
   static const String createCategory = "${baseUrl}admin/create";
