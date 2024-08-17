@@ -11,12 +11,12 @@ class BookingViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
 
-  Future<void> fetchBookingsByUser(String userId) async {
+  Future<void> fetchBookingsByUser() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      _bookings = await ApiService.getBookingsByUser(userId);
+      _bookings = await ApiService.getBookingsByUser();
     } catch (e) {
       _errorMessage = e.toString();
     } finally {

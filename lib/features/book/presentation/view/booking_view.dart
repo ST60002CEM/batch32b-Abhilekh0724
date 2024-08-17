@@ -3,18 +3,12 @@ import 'package:provider/provider.dart';
 import '../viewmodel/booking_view_model.dart';
 
 class BookingView extends StatelessWidget {
-  final String userId;
-
-  BookingView({required this.userId});
-
   @override
   Widget build(BuildContext context) {
+    // Fetch bookings without requiring userId as the token is used for authentication
     return ChangeNotifierProvider(
-      create: (_) => BookingViewModel()..fetchBookingsByUser(userId),
+      create: (_) => BookingViewModel()..fetchBookingsByUser(),
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('My Bookings'),
-        ),
         body: Consumer<BookingViewModel>(
           builder: (context, viewModel, child) {
             if (viewModel.isLoading) {
