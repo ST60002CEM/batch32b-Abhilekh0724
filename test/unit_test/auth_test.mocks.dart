@@ -40,6 +40,10 @@ class _FakeEither_0<L, R> extends _i1.SmartFake implements _i2.Either<L, R> {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockAuthUseCase extends _i1.Mock implements _i3.AuthUseCase {
+  MockAuthUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
   @override
   _i4.Future<_i2.Either<_i5.Failure, _i6.AuthEntity>> getCurrentUser() =>
       (super.noSuchMethod(
@@ -49,15 +53,6 @@ class MockAuthUseCase extends _i1.Mock implements _i3.AuthUseCase {
         ),
         returnValue: _i4.Future<_i2.Either<_i5.Failure, _i6.AuthEntity>>.value(
             _FakeEither_0<_i5.Failure, _i6.AuthEntity>(
-          this,
-          Invocation.method(
-            #getCurrentUser,
-            [],
-          ),
-        )),
-        returnValueForMissingStub:
-            _i4.Future<_i2.Either<_i5.Failure, _i6.AuthEntity>>.value(
-                _FakeEither_0<_i5.Failure, _i6.AuthEntity>(
           this,
           Invocation.method(
             #getCurrentUser,
@@ -82,15 +77,6 @@ class MockAuthUseCase extends _i1.Mock implements _i3.AuthUseCase {
             [user],
           ),
         )),
-        returnValueForMissingStub:
-            _i4.Future<_i2.Either<_i5.Failure, bool>>.value(
-                _FakeEither_0<_i5.Failure, bool>(
-          this,
-          Invocation.method(
-            #registerUser,
-            [user],
-          ),
-        )),
       ) as _i4.Future<_i2.Either<_i5.Failure, bool>>);
 
   @override
@@ -108,18 +94,6 @@ class MockAuthUseCase extends _i1.Mock implements _i3.AuthUseCase {
         ),
         returnValue: _i4.Future<_i2.Either<_i5.Failure, bool>>.value(
             _FakeEither_0<_i5.Failure, bool>(
-          this,
-          Invocation.method(
-            #loginUser,
-            [
-              email,
-              password,
-            ],
-          ),
-        )),
-        returnValueForMissingStub:
-            _i4.Future<_i2.Either<_i5.Failure, bool>>.value(
-                _FakeEither_0<_i5.Failure, bool>(
           this,
           Invocation.method(
             #loginUser,
