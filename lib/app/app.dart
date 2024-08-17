@@ -11,6 +11,7 @@ import 'package:venuevendor/screen/presentation/view/bottom_view/dashboard_view.
 import '../features/splash/presentation/view/splash_view.dart';
 import 'navigator_key/navigator_key.dart';
 
+
 class App extends ConsumerWidget {
   const App({super.key});
 

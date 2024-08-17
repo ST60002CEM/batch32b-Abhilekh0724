@@ -89,11 +89,11 @@ class ApiService {
       Uri.parse(submitReviewUrl),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // Include the token if required by the API
+        'Authorization': 'Bearer $token',
       },
       body: json.encode({
-        'categoryId': categoryId,
-        'userId': '66b4690da3c2323e47087524', // Replace with actual user ID if necessary
+        'categoryId': '66b5ff51db4a1ed0781bb6ae',
+        'userId': '66b4690da3c2323e47087524',
         'rating': rating,
         'comment': comment,
       }),
@@ -121,14 +121,30 @@ class ApiService {
     }
   }
 
-  // Get bookings by user
-  static Future<List<Booking>> getBookingsByUser(String userId) async {
-    final response = await http.get(Uri.parse('$getBookingsByUserUrl/$userId'));
+// Get bookings for the currently authenticated user
+  static Future<List<Booking>> getBookingsByUser() async {
+    final response = await http.get(
+      Uri.parse(getBookingsByUserUrl),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print('Response Status: ${response.statusCode}');
+    print('Response Body: ${response.body}'); // Log the response body
 
     if (response.statusCode == 200) {
       try {
-        final List<dynamic> jsonResponse = json.decode(response.body);
-        return jsonResponse.map((bookingJson) => Booking.fromJson(bookingJson)).toList();
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        print('Parsed JSON Response: $jsonResponse'); // Log parsed response
+
+        // Check if response contains the 'bookings' key with a list
+        if (jsonResponse['bookings'] != null) {
+          final List<dynamic> bookingsJson = jsonResponse['bookings'];
+          return bookingsJson.map((bookingJson) => Booking.fromJson(bookingJson)).toList();
+        } else {
+          throw Exception('No bookings found in response');
+        }
       } catch (e) {
         print('JSON Parsing Exception: $e');
         throw Exception('Failed to parse JSON');
@@ -137,6 +153,7 @@ class ApiService {
       throw Exception('Failed to load bookings');
     }
   }
+
 
   // Profile API Endpoints
   static const String _uploadProfilePicUrl = '${baseUrl}profile/uploadProfilePic';

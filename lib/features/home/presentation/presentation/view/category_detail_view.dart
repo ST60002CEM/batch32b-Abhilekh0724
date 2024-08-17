@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For date formatting
 import '../../../../../core/networking/local/api_service.dart';
+import '../../../../../screen/presentation/view/bottom_view/dashboard_view.dart';
 import '../../data/model/venue_card.dart';
 
 class CategoryDetailView extends StatefulWidget {
@@ -17,6 +18,8 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
   bool isLoading = true;
   bool hasError = false;
   DateTime? _selectedDate;
+  double? _rating;
+  String? _comment;
 
   @override
   void initState() {
@@ -63,7 +66,7 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
       return;
     }
 
-    final userId = '66b4690da3c2323e47087524';
+    final userId = '66b4690da3c2323e47087524'; // Use the logged-in user's ID
     try {
       await ApiService.bookCategory(widget.categoryId, userId, _selectedDate!);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -73,6 +76,31 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
       print('Booking Exception: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to book category')),
+      );
+    }
+  }
+
+  Future<void> _submitReview() async {
+    if (_rating == null || _comment == null || _comment!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please provide a rating and comment')),
+      );
+      return;
+    }
+
+    try {
+      await ApiService.submitReview(widget.categoryId, _rating!, _comment!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Review submitted successfully!')),
+      );
+      setState(() {
+        _rating = null;
+        _comment = null;
+      });
+    } catch (e) {
+      print('Review Exception: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to submit review')),
       );
     }
   }
@@ -93,10 +121,12 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
         ),
         backgroundColor: Colors.red[50],
         elevation: 0, // Optional: Remove shadow
-        leading: IconButton(
+        leading: ModalRoute.of(context)?.settings.name != '/dashboard'
+            ? IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
-        ),
+        )
+            : null, // Hide back button when viewing DashboardView
       ),
       backgroundColor: Colors.red[50],
       body: isLoading
@@ -129,13 +159,13 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
                     if (progress == null) {
                       return child;
                     } else {
-                      return Center(
+                      return const Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const CircularProgressIndicator(),
-                            const SizedBox(height: 16.0),
-                            const Text('Loading image...'),
+                            CircularProgressIndicator(),
+                            SizedBox(height: 16.0),
+                            Text('Loading image...'),
                           ],
                         ),
                       );
@@ -235,6 +265,73 @@ class _CategoryDetailViewState extends State<CategoryDetailView> {
                 child: const Center(
                   child: Text(
                     'Book Now',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24.0),
+              const Text(
+                'Leave a Review',
+                style: TextStyle(
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Comment',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+                onChanged: (value) {
+                  setState(() {
+                    _comment = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 16.0),
+              Row(
+                children: [
+                  const Text(
+                    'Rating: ',
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                  Expanded(
+                    child: Slider(
+                      value: _rating ?? 0,
+                      onChanged: (value) {
+                        setState(() {
+                          _rating = value;
+                        });
+                      },
+                      min: 0,
+                      max: 5,
+                      divisions: 5,
+                      label: _rating?.toString(),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24.0),
+              ElevatedButton(
+                onPressed: _submitReview,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red[300],
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16.0,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Submit Review',
                     style: TextStyle(
                       fontSize: 18.0,
                       color: Colors.white,

@@ -8,8 +8,6 @@ import 'package:venuevendor/screen/checkout_screen.dart';
 import 'package:venuevendor/screen/map_screen.dart';
 import 'package:venuevendor/app/navigator_key/navigator_key.dart';
 import 'package:venuevendor/screen/presentation/view/bottom_view/profile_view.dart';
-
-
 import '../../../../features/home/presentation/presentation/view/home_view.dart';
 import '../../../../features/home/presentation/presentation/view/search_view.dart';
 
@@ -104,7 +102,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                   message: 'Problem reported successfully!',
                   color: Colors.green,
                 );
-                // Optionally, handle the submitted problem description
+                _controller.dispose(); // Dispose controller to avoid memory leaks
               },
             ),
           ],
@@ -119,7 +117,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
 
     List<Widget> lstBottomScreen = [
       const HomeView(),
-      BookingView(userId: '66b4690da3c2323e47087524'),
+      BookingView(),
       ProfilePage(),
       const MapScreen(),
     ];
@@ -190,8 +188,8 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
             label: 'Book',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Location',
+            icon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
       ),
@@ -203,14 +201,15 @@ void showMySnackBar({
   required String message,
   Color? color,
 }) {
-  ScaffoldMessenger.of(
-    AppNavigator.navigatorKey.currentState!.context,
-  ).showSnackBar(
-    SnackBar(
-      content: Text(message),
-      backgroundColor: color ?? Colors.green,
-      duration: const Duration(seconds: 1),
-      behavior: SnackBarBehavior.floating,
-    ),
-  );
+  final context = AppNavigator.navigatorKey.currentState?.context;
+  if (context != null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color ?? Colors.green,
+        duration: const Duration(seconds: 1),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 }
